@@ -322,6 +322,134 @@
     });
   }
 
+  /* ---------- block tower mini-game ---------- */
+  var towerWrap = $("#towerWrap"), towerInner = $("#towerInner"),
+      towerBtn = $("#towerBtn"), towerScore = $("#towerScore"),
+      towerBest = $("#towerBest"), towerMsg = $("#towerMsg"), towerTip = $("#towerTip");
+  var BLOCK_H = 26, MIN_W = 10, PERFECT_PX = 8;
+  var TCOLORS = ["#a34063", "#f5c542", "#7bc96f", "#5aa9e6", "#b388eb"];
+  var TG = null, movingEl = null, rafT = null;
+
+  function tBestGet() { return parseInt(storeGet("pip-tower-best") || "0", 10) || 0; }
+  function tAreaW() { return towerWrap ? towerWrap.clientWidth : 300; }
+  function tTone(f, d, type, v) {
+    if (muted) return;
+    try { var c = ac(); if (c) tone(f, c.currentTime, d, type, v); } catch (e) {}
+  }
+  function tBlockEl(x, w, color, bottom) {
+    var d = document.createElement("div");
+    d.className = "tower-block";
+    d.style.left = x + "px"; d.style.width = w + "px";
+    d.style.bottom = bottom + "px"; d.style.background = color;
+    return d;
+  }
+  function tCamera() {
+    if (!TG || !towerWrap) return;
+    var need = TG.blocks.length * BLOCK_H - (towerWrap.clientHeight - 80);
+    towerInner.style.transform = need > 0 ? "translateY(" + need + "px)" : "";
+  }
+  function tFloat(text) {
+    var f = document.createElement("div");
+    f.className = "tower-float"; f.textContent = text;
+    towerWrap.appendChild(f);
+    setTimeout(function () { f.remove(); }, 950);
+  }
+  function tSpawnMoving() {
+    var W = tAreaW(), prev = TG.blocks[TG.blocks.length - 1];
+    TG.col = TCOLORS[TG.blocks.length % TCOLORS.length];
+    var startLeft = Math.random() < 0.5;
+    TG.mx = startLeft ? 0 : W - prev.w;
+    TG.dir = startLeft ? 1 : -1;
+    TG.speed = Math.min(6, 2 + TG.score * 0.15);
+    movingEl = tBlockEl(TG.mx, prev.w, TG.col, TG.blocks.length * BLOCK_H);
+    towerInner.appendChild(movingEl);
+  }
+  function tLoop() {
+    if (!TG || !TG.playing) return;
+    var W = tAreaW(), prev = TG.blocks[TG.blocks.length - 1];
+    TG.mx += TG.dir * TG.speed;
+    if (TG.mx <= 0) { TG.mx = 0; TG.dir = 1; }
+    if (TG.mx + prev.w >= W) { TG.mx = W - prev.w; TG.dir = -1; }
+    if (movingEl) movingEl.style.left = TG.mx + "px";
+    rafT = requestAnimationFrame(tLoop);
+  }
+  function tGameOver() {
+    TG.playing = false;
+    if (movingEl) { movingEl.remove(); movingEl = null; }
+    if (rafT) cancelAnimationFrame(rafT);
+    var best = tBestGet();
+    if (TG.score > best) { storeSet("pip-tower-best", String(TG.score)); best = TG.score; }
+    towerBest.textContent = best;
+    tTone(400, 0.15, "triangle", 0.12);
+    setTimeout(function () { tTone(300, 0.15, "triangle", 0.12); }, 140);
+    setTimeout(function () { tTone(200, 0.28, "triangle", 0.12); }, 280);
+    towerMsg.innerHTML = "";
+    var t1 = document.createElement("div");
+    t1.textContent = "🌙 Tower tumbled at " + TG.score + " blocks!";
+    var t2 = document.createElement("div");
+    t2.textContent = "Pip says: \"again! again!\"";
+    towerMsg.appendChild(t1); towerMsg.appendChild(t2);
+    towerMsg.hidden = false;
+    towerBtn.textContent = "↻ Stack again";
+    towerBtn.disabled = false;
+  }
+  function tDrop() {
+    if (!TG || !TG.playing || !movingEl) return;
+    var prev = TG.blocks[TG.blocks.length - 1];
+    var x = TG.mx, w = prev.w;
+    var newX, newW, perfect = false;
+    if (Math.abs(x - prev.x) < PERFECT_PX) { newX = prev.x; newW = w; perfect = true; }
+    else {
+      var left = Math.max(x, prev.x), right = Math.min(x + w, prev.x + prev.w);
+      if (right - left < MIN_W) { tGameOver(); return; }
+      newX = left; newW = right - left;
+      var cutX = x < prev.x ? x : right;
+      var cutW = x < prev.x ? left - x : (x + w) - right;
+      if (cutW > 1) {
+        var cut = tBlockEl(cutX, cutW, TG.col, TG.blocks.length * BLOCK_H);
+        towerInner.appendChild(cut);
+        requestAnimationFrame(function () { cut.classList.add("falling"); });
+        setTimeout(function () { cut.remove(); }, 700);
+      }
+    }
+    movingEl.remove(); movingEl = null;
+    TG.blocks.push({ x: newX, w: newW });
+    towerInner.appendChild(tBlockEl(newX, newW, TG.col, (TG.blocks.length - 1) * BLOCK_H));
+    TG.score++;
+    towerScore.textContent = TG.score;
+    if (perfect) {
+      tTone(880, 0.15, "sine", 0.12);
+      setTimeout(function () { tTone(1174, 0.22, "sine", 0.1); }, 90);
+      tFloat("✨ Perfect!");
+    } else { tTone(180, 0.12, "triangle", 0.14); }
+    tCamera();
+    tSpawnMoving();
+  }
+  function tStart() {
+    if (!towerWrap || !towerInner) return;
+    if (rafT) cancelAnimationFrame(rafT);
+    towerInner.innerHTML = "";
+    towerMsg.hidden = true;
+    var W = tAreaW();
+    var bw = Math.min(200, Math.floor(W * 0.62));
+    TG = { blocks: [{ x: Math.floor((W - bw) / 2), w: bw }], score: 0,
+           playing: true, mx: 0, dir: 1, speed: 2, col: TCOLORS[1] };
+    towerInner.appendChild(tBlockEl(TG.blocks[0].x, bw, TCOLORS[0], 0));
+    towerScore.textContent = "0";
+    towerBest.textContent = tBestGet();
+    towerBtn.textContent = "⬇ Tap the tower to drop";
+    towerBtn.disabled = true;
+    if (towerTip) towerTip.textContent = "👆 Tap the tower area to drop each swinging block. Line them up!";
+    tCamera();
+    tSpawnMoving();
+    tLoop();
+  }
+  if (towerWrap && towerBtn) {
+    towerBest.textContent = tBestGet();
+    towerBtn.addEventListener("click", tStart);
+    towerWrap.addEventListener("click", tDrop);
+  }
+
   /* ---------- day / night mode ---------- */
   function setNight(on) {
     document.body.classList.toggle("night", on);

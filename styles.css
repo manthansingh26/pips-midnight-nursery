@@ -211,6 +211,38 @@ body.chaos .badge{animation:wiggle 1s ease-in-out infinite}
 body.chaos .btn{background:linear-gradient(45deg,#ff3838,#a34063,#00d2d3);border:4px ridge #f5c542}
 body.chaos .polaroid{transform:rotate(3deg) scale(1.03)}
 
+/* block tower mini-game (project 5) */
+.tower-wrap{
+  position:relative;height:340px;background:#fdf3e3;border:3px inset var(--line);
+  border-radius:12px;overflow:hidden;justify-self:center;width:min(88vw,340px);
+  cursor:pointer;touch-action:manipulation;
+}
+.tower-inner{position:absolute;left:0;right:0;bottom:0;will-change:transform}
+.tower-block{
+  position:absolute;height:26px;border-radius:6px;border:2px solid rgba(92,64,51,.35);
+  box-sizing:border-box;
+}
+.tower-block.falling{transition:transform .6s ease-in,opacity .6s;transform:translateY(130px) rotate(24deg);opacity:0}
+.tower-hud{
+  position:absolute;top:.5rem;left:.7rem;right:.7rem;display:flex;justify-content:space-between;
+  font-size:.9rem;z-index:2;pointer-events:none;
+}
+.tower-msg{
+  position:absolute;left:.6rem;right:.6rem;bottom:.6rem;background:#fff8d6;
+  border:3px dashed var(--gold);border-radius:10px;padding:.5rem;text-align:center;
+  font-weight:bold;z-index:2;
+}
+.tower-msg[hidden]{display:none}
+.tower-float{
+  position:absolute;top:38%;left:0;right:0;text-align:center;font-weight:bold;
+  color:var(--berry-dark);z-index:3;pointer-events:none;animation:floatUp .9s ease-out forwards;
+}
+@keyframes floatUp{to{transform:translateY(-34px);opacity:0}}
+.tower-cta{text-align:center;margin:.6rem 0 0}
+body.night .tower-wrap{background:#1d1338;border-color:#4a3378}
+body.night .tower-msg{background:#3a2a63;color:#f3e9ff;border-color:#5a4486}
+body.night .tower-float{color:#f0c6da}
+
 /* desktop */
 @media (min-width:720px){
   .about-grid{grid-template-columns:300px 1fr}
