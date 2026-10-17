@@ -634,6 +634,77 @@
     }, { passive: true });
   }
 
+  /* ---------- ask pip (rule-based chat in Pip's voice) ---------- */
+  var chatForm = $("#chatForm"), chatInput = $("#chatInput"), chatLog = $("#chatLog");
+  var JOKES = [
+    "Why did the ghost go to bed? Because it was dead tired! ...Pip made that up. Giggle!",
+    "What does Pip put on toast? Jam! And then Pip eats the toast. And the jam. Mostly the jam.",
+    "Knock knock! ...Pip forgot the rest. Giggle! Pip is better at naps than jokes."
+  ];
+  var FALLBACKS = [
+    "Hmm! Pip doesn't know that one... but Pip giggles anyway! *giggle*",
+    "Pip tilted Pip's head so far thinking about that! Ask Pip for a joke or a lullaby instead!",
+    "That's a big question for a small baby! Pip will dream about it tonight."
+  ];
+  var jokeIdx = 0, fbIdx = 0;
+  function chatAddMsg(who, text) {
+    if (!chatLog) return null;
+    var d = document.createElement("div");
+    d.className = "chat-msg " + who;
+    var w = document.createElement("span");
+    w.className = "chat-who"; w.textContent = who === "pip" ? "Pip 💀" : "You";
+    var t = document.createElement("span");
+    t.className = "chat-text"; t.textContent = text;
+    d.appendChild(w); d.appendChild(t);
+    chatLog.appendChild(d);
+    while (chatLog.children.length > 30) chatLog.removeChild(chatLog.firstChild);
+    chatLog.scrollTop = chatLog.scrollHeight;
+    return d;
+  }
+  function pipThink(q) {
+    var vName = storeGet("pip-visitor-name");
+    if (/\b(hi|hello|hey|yo|hii+)\b/.test(q)) return "Hiii! *giggle* Pip is SO happy you said hi! What's your favorite dream?";
+    if (q.indexOf("your name") > -1 || q.indexOf("who are you") > -1 || q.indexOf("about you") > -1)
+      return "Pip is Pip! Junior Dream Engineer at the Midnight Nursery! Pip makes dreams, lullabies and nightlights for sleepy little creatures!";
+    if (q.indexOf("lullaby") > -1 || q.indexOf("sing") > -1 || q.indexOf("music") > -1 || q.indexOf("song") > -1) {
+      if (lullabyBtn) lullabyBtn.click();
+      return "Pip is playing tonight's lullaby just for you! ♫ Shhh... listen...";
+    }
+    if (q.indexOf("joke") > -1 || q.indexOf("funny") > -1) { var j = JOKES[jokeIdx % JOKES.length]; jokeIdx++; return j; }
+    if (q.indexOf("dream") > -1) return "Pip's favorite dream flavor is moonbeams and honey! What's yours? Tell the guestbook below!";
+    if (q.indexOf("my name") > -1 || q.indexOf("who am i") > -1)
+      return vName ? "Your name is " + vName + "! Pip remembers! Pip never forgets friends (Pip forgets naps though)."
+                   : "Pip doesn't know your name yet! Sign the guestbook below and Pip will remember forever!";
+    if (q.indexOf("love") > -1 || q.indexOf("like you") > -1 || q.indexOf("cool") > -1 || q.indexOf("awesome") > -1)
+      return "Pip likes you too! *happy wiggle*";
+    if (q.indexOf("bye") > -1 || q.indexOf("night night") > -1 || q.indexOf("goodnight") > -1 || q.indexOf("sleep") > -1)
+      return "Night night! Dream of moonbeams and honey! Pip will be delivering dreams all night! 💤";
+    if (q.indexOf("game") > -1 || q.indexOf("tower") > -1 || q.indexOf("stack") > -1)
+      return "Pip LOVES the block tower! Pip's record is... hmm, Pip doesn't remember. Pip was napping. What's YOUR best?";
+    if (q.indexOf("job") > -1 || q.indexOf("work") > -1 || q.indexOf("do you do") > -1)
+      return "Pip designs dreams, composes lullabies and builds nightlights for the neighborhood's little ghosts! Best job in the whole night!";
+    if (q.indexOf("hungry") > -1 || q.indexOf("eat") > -1 || q.indexOf("cake") > -1 || q.indexOf("food") > -1)
+      return "Pip already ate. Twice. Giggle!";
+    var f = FALLBACKS[fbIdx % FALLBACKS.length]; fbIdx++; return f;
+  }
+  if (chatForm && chatInput && chatLog) {
+    chatForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var q = chatInput.value.trim().slice(0, 120);
+      if (!q) return;
+      chatAddMsg("you", q);
+      chatInput.value = "";
+      var typing = chatAddMsg("pip", "...");
+      if (typing) typing.classList.add("typing");
+      var reply = pipThink(q.toLowerCase());
+      setTimeout(function () {
+        if (typing) typing.remove();
+        chatAddMsg("pip", reply);
+        pop();
+      }, prefersReduced ? 60 : 700);
+    });
+  }
+
   /* ---------- day / night mode ---------- */
   function setNight(on) {
     document.body.classList.toggle("night", on);

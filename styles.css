@@ -316,6 +316,24 @@ body.night .book-page h4{color:#f0c6da}
   font-size:.85rem;z-index:3;pointer-events:none;transition:opacity .5s;
 }
 
+/* ask pip chat */
+.chat-log{display:grid;gap:.6rem;max-height:320px;overflow-y:auto;padding:.4rem .1rem;margin-bottom:.7rem}
+.chat-msg{display:flex;flex-direction:column;gap:.15rem;max-width:88%;padding:.55rem .8rem;border-radius:12px}
+.chat-msg.pip{background:var(--cream);border:3px outset var(--line);align-self:flex-start}
+.chat-msg.you{background:#e8f0fe;border:3px outset #b9cdf3;align-self:flex-end;text-align:right}
+.chat-who{font-size:.75rem;font-weight:bold;color:var(--berry-dark)}
+.chat-text{font-size:.95rem}
+.chat-msg.typing .chat-text{letter-spacing:.25em;animation:blink 1s infinite}
+@keyframes blink{50%{opacity:.25}}
+.chat-form{display:flex;gap:.5rem}
+.chat-form input{
+  flex:1;font:inherit;padding:.6rem;border:3px inset var(--line);border-radius:10px;
+  background:#fff;color:var(--ink);min-width:0;
+}
+body.night .chat-msg.pip{background:#2a1c4e;border-color:#4a3378}
+body.night .chat-msg.you{background:#1d2c52;border-color:#33507e}
+body.night .chat-form input{background:#1d1338;color:#f3e9ff;border-color:#4a3378}
+
 /* desktop */
 @media (min-width:720px){
   .about-grid{grid-template-columns:300px 1fr}
