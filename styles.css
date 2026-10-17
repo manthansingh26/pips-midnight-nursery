@@ -89,6 +89,7 @@ img{max-width:100%;height:auto;display:block}
   box-shadow:4px 4px 0 rgba(92,64,51,.25);
 }
 .btn:active{border-style:inset;box-shadow:none;transform:translate(2px,2px)}
+.btn:focus-visible,.site-header nav a:focus-visible,.header-toggles button:focus-visible,.mute-fixed:focus-visible,.grow-row:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 
 /* panels */
 .panel{
@@ -185,7 +186,7 @@ body.night .panel{border-color:#4a3378;box-shadow:6px 6px 0 rgba(0,0,0,.35)}
 body.night .hero-pip img,body.night .proj img{mix-blend-mode:screen}
 body.night .lantern{filter:drop-shadow(0 0 26px rgba(245,197,66,.85))}
 body.night .badge,body.night .fact-list li{background:#3a2a63;color:#f3e9ff;border-color:#5a4486}
-body.night .scene,.growth-wall{background:#2a1c4e;border-color:#4a3378}
+body.night .scene,body.night .growth-wall{background:#2a1c4e;border-color:#4a3378}
 body.night .route-wrap{background:#1d1338;border-color:#4a3378}
 body.night .growth-wall{background:#241a45}
 body.night .grow-label{color:#f0c6da}

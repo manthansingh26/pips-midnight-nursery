@@ -107,7 +107,7 @@
       } catch (e) {}
       setTimeout(function () {
         playing = false;
-        lullabyBtn.innerHTML = "▶ Play tonight's lullaby";
+        lullabyBtn.textContent = "▶ Play tonight\u2019s lullaby";
         if (lullabyStatus) lullabyStatus.textContent = "Sweet dreams. Pip will compose a new one tomorrow.";
       }, MELODY.length * 420 + 700);
     });
@@ -139,16 +139,25 @@
       if (pipClicks >= 5 && !eggDone) { eggDone = true; secretLullaby(); }
     });
     if (finePointer && !prefersReduced) {
-      var tx = 0, ty = 0, cx = 0, cy = 0;
+      var tx = 0, ty = 0, cx = 0, cy = 0, tiltRunning = false;
       window.addEventListener("pointermove", function (e) {
         tx = e.clientX / window.innerWidth - 0.5;
         ty = e.clientY / window.innerHeight - 0.5;
       }, { passive: true });
-      (function loop() {
+      function tiltLoop() {
+        if (!tiltRunning) return;
         cx += (tx - cx) * 0.06; cy += (ty - cy) * 0.06;
         pipHero.style.transform = "translate(" + (cx * 24) + "px," + (cy * 18) + "px) rotate(" + (cx * 7) + "deg)";
-        requestAnimationFrame(loop);
-      })();
+        requestAnimationFrame(tiltLoop);
+      }
+      /* pause tilt when Pip scrolls off-screen to save CPU */
+      try {
+        var tiltIO = new IntersectionObserver(function (es) {
+          tiltRunning = es[0].isIntersecting;
+          if (tiltRunning) tiltLoop();
+        });
+        tiltIO.observe(pipHero);
+      } catch (e) { tiltRunning = true; tiltLoop(); }
     } else {
       pipHero.classList.add("floaty"); /* touch fallback: gentle bob */
     }
@@ -560,7 +569,7 @@
     routeMoon.addEventListener("click", function () {
       moonClicks++;
       pop();
-      if (moonClicks >= 3) { moonClicks = 0; if (!showerDone) showerDone = true; meteorShower(); }
+      if (moonClicks >= 3 && !showerDone) { showerDone = true; meteorShower(); }
     });
   }
 
