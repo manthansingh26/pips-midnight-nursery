@@ -72,9 +72,20 @@
     renderMute();
   }
 
-  /* ---------- lullaby lab: generative music-box melody ---------- */
-  var MELODY = [261.63, 261.63, 392.0, 392.0, 440.0, 440.0, 392.0,
-                349.23, 349.23, 329.63, 329.63, 293.66, 293.66, 261.63];
+  /* ---------- lullaby lab: generative music-box melodies (one per night) ---------- */
+  var MELODIES = [
+    { name: "Twinkle Twinkle", notes: [261.63, 261.63, 392.0, 392.0, 440.0, 440.0, 392.0,
+                349.23, 349.23, 329.63, 329.63, 293.66, 293.66, 261.63] },
+    { name: "Honey Waltz", notes: [261.63, 329.63, 392.0, 329.63, 440.0, 392.0, 329.63, 261.63,
+                329.63, 392.0, 440.0, 392.0, 329.63, 261.63] },
+    { name: "Little Lamb's Dream", notes: [659.25, 587.33, 523.25, 587.33, 659.25, 659.25, 659.25,
+                587.33, 587.33, 587.33, 659.25, 783.99, 783.99,
+                659.25, 587.33, 523.25, 587.33, 659.25, 659.25, 659.25, 659.25,
+                587.33, 587.33, 659.25, 587.33, 523.25] }
+  ];
+  var dayIdx = Math.floor(Date.now() / 86400000) % MELODIES.length;
+  var MELODY = MELODIES[dayIdx].notes;
+  var MELODY_NAME = MELODIES[dayIdx].name;
   var playing = false;
   var lullabyBtn = $("#lullabyBtn"), lullabyStatus = $("#lullabyStatus");
   if (lullabyBtn) {
@@ -101,6 +112,7 @@
       }, MELODY.length * 420 + 700);
     });
   }
+  if (lullabyStatus) lullabyStatus.textContent = "Tonight: \"" + MELODY_NAME + "\" — Pip composes a new one every night.";
 
   /* ---------- Pip hero: tilt toward cursor + click giggle + easter egg ---------- */
   var pipHero = $("#pipHero"), eggMsg = $("#eggMsg");
@@ -440,7 +452,7 @@
     towerBest.textContent = tBestGet();
     towerBtn.textContent = "⬇ Tap the tower to drop";
     towerBtn.disabled = true;
-    if (towerTip) towerTip.textContent = "👆 Tap the tower area to drop each swinging block. Line them up!";
+    if (towerTip) towerTip.textContent = "👆 Tap the tower or press Space to drop. Line them up!";
     tCamera();
     tSpawnMoving();
     tLoop();
@@ -449,6 +461,15 @@
     towerBest.textContent = tBestGet();
     towerBtn.addEventListener("click", tStart);
     towerWrap.addEventListener("click", tDrop);
+    /* keyboard: space / enter / arrow-down drops the block (not while typing) */
+    document.addEventListener("keydown", function (e) {
+      if (!TG || !TG.playing) return;
+      if (e.key !== " " && e.key !== "Enter" && e.key !== "ArrowDown") return;
+      var tag = (document.activeElement && document.activeElement.tagName) || "";
+      if (tag === "INPUT" || tag === "TEXTAREA") return;
+      e.preventDefault();
+      tDrop();
+    });
   }
 
   /* ---------- bedtime storybook ---------- */
