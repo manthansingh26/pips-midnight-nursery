@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pip's Midnight Nursery — Baby's First Portfolio</title>
+<meta name="description" content="Meet Pip, Junior Dream Engineer at the Midnight Nursery. Lullabies, nightlights and dream deliveries for little night creatures.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌙</text></svg>">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="marquee" role="note" aria-label="Welcome banner">
+  <div class="marquee-inner">
+    <span>✶ welcome to pip's midnight nursery ✶ junior dream engineer at your service ✶ please sign the guestbook ✶ dreams delivered nightly ✶&nbsp;</span>
+    <span aria-hidden="true">✶ welcome to pip's midnight nursery ✶ junior dream engineer at your service ✶ please sign the guestbook ✶ dreams delivered nightly ✶&nbsp;</span>
+  </div>
+</div>
+
+<header class="site-header">
+  <div class="logo">🌙 Pip's Midnight Nursery</div>
+  <nav aria-label="Main navigation">
+    <a href="#about">About</a>
+    <a href="#projects">Projects</a>
+    <a href="#story">Story</a>
+    <a href="#guestbook">Guestbook</a>
+  </nav>
+  <div class="header-toggles">
+    <button type="button" id="dayNightBtn" aria-pressed="false">🌙 Night</button>
+    <button type="button" id="chaosBtn" aria-pressed="false">🌀 Chaos mode</button>
+  </div>
+</header>
+
+<main>
+  <section class="hero" id="top">
+    <div class="hero-pip" id="pipHero" role="img" aria-label="Pip, a cute skull-faced baby in a starry nightcap, waving from a dream cloud. Click Pip!">
+      <img src="assets/pip_avatar_cloud.png" alt="Pip, a cute skull-faced baby in a starry nightcap with a pink bow, waving from a dream cloud" id="pipImg" width="768" height="934">
+    </div>
+    <p id="eggMsg" class="egg-msg" hidden>🎉 You found Pip's secret lullaby! Pip composed it just for you. (Pip is doing a happy wiggle.)</p>
+    <h1>Meet Pip</h1>
+    <p class="tagline">&ldquo;I build the dreams you fall asleep inside.&rdquo;</p>
+    <p class="sub">Junior Dream Engineer · Midnight Nursery · professional waver</p>
+    <div class="badges">
+      <span class="badge">🚧 under construction (always)</span>
+      <span class="badge">✶ 100% cozy</span>
+      <span class="badge">💤 naps at sunrise</span>
+    </div>
+    <p><a class="btn" href="#projects">See what Pip makes ↓</a></p>
+  </section>
+
+  <section id="about" class="panel reveal">
+    <h2>What Pip is</h2>
+    <div class="about-grid">
+      <figure class="polaroid">
+        <img src="assets/pip_portrait.png" alt="Official portrait of Pip holding a glowing dream lantern" width="640" height="960" loading="lazy">
+        <figcaption>Pip, official portrait · age: baby</figcaption>
+      </figure>
+      <div>
+        <p>Pip is a baby with a smooth, round skull face, big soft eye sockets glowing with warm amber light, a tiny crooked smile, and a starry nightcap with a pink bow. Cute, never scary — the skull is just Pip's face, like a cozy little moon.</p>
+        <p>Pip is curious, sleepy, a little clumsy, and giggles at everything. Pip's one fear? Silence. That's why the nursery always hums a lullaby. By night, Pip works as the Junior Dream Engineer of the Midnight Nursery, designing the dreams, lullabies, and nightlights that tuck the neighborhood's little ghosts and beasties into bed.</p>
+        <ul class="fact-list">
+          <li>💀 face: skull, but make it cozy</li>
+          <li>👀 eyes: glowing amber pinpricks</li>
+          <li>🎀 hat: starry nightcap + pink bow</li>
+          <li>😄 laugh: giggles at everything</li>
+          <li>🔇 fear: silence (hates it)</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="projects" class="panel reveal">
+    <h2>What Pip makes</h2>
+    <p class="section-sub">Three inventions from the nursery workshop. They're all playable — go ahead, poke them.</p>
+
+    <article class="proj">
+      <img src="assets/pip_lullaby_box.png" alt="Pip's lullaby lab music box with a golden winding key and floating star chimes" width="640" height="578" loading="lazy">
+      <div>
+        <h3>1 · The Lullaby Lab</h3>
+        <p>Pip's music box composes a brand-new soothing tune every night. Press play to hear tonight's lullaby, synthesized live in your browser — no recordings, just Web Audio magic. Side effects may include drowsiness.</p>
+        <p><button type="button" id="lullabyBtn" class="btn">▶ Play tonight's lullaby</button></p>
+        <p class="tiny" id="lullabyStatus">Tip: the speaker button (bottom-right) mutes everything.</p>
+      </div>
+    </article>
+
+    <article class="proj">
+      <img src="assets/pip_dream_lantern.png" alt="Pip's glowing crescent moon nightlight lantern" width="640" height="571" loading="lazy" class="lantern">
+      <div>
+        <h3>2 · Nightlight Collection</h3>
+        <p>A gallery of glowing lamps Pip designed for monsters who are scared of the dark. Flip the nursery to night mode and watch everything change moods — the crescent moon lantern is Pip's proudest build.</p>
+        <p><button type="button" id="dayNightBtn2" class="btn">🌙 Try night mode</button></p>
+      </div>
+    </article>
+
+    <article class="proj">
+      <div class="route-wrap">
+        <svg id="routeMap" viewBox="0 0 400 220" role="img" aria-label="Pip's dream delivery route over Willow Lane, with a glowing dream dot flying between rooftops">
+          <text x="28" y="178" font-size="36">🏠</text>
+          <text x="150" y="184" font-size="36">🏠</text>
+          <text x="272" y="178" font-size="36">🏠</text>
+          <text x="330" y="58" font-size="30">🌙</text>
+          <path d="M40 150 Q 110 60 170 140 T 300 120" fill="none" stroke="#a34063" stroke-width="4" stroke-dasharray="10 8" stroke-linecap="round"/>
+          <circle r="9" fill="#f5c542" stroke="#5c4033" stroke-width="2">
+            <animateMotion dur="7s" repeatCount="indefinite" path="M40 150 Q 110 60 170 140 T 300 120"/>
+          </circle>
+          <text x="150" y="212" font-size="13" fill="#5c4033">Willow Lane · tonight's route</text>
+        </svg>
+      </div>
+      <div>
+        <h3>3 · Dream Delivery Routes</h3>
+        <p>Every night Pip flies rooftop to rooftop delivering dreams. This is tonight's route over Willow Lane — watch the little dream dot make its rounds while Pip naps between stops.</p>
+      </div>
+    </article>
+  </section>
+
+  <section id="story" class="panel reveal">
+    <h2>Pip's story</h2>
+    <p class="section-sub">How Pip got here, in three small scenes. Scroll slowly.</p>
+    <div class="scene">
+      <div class="scene-emoji">🌫️</div>
+      <div><h3>Scene 1 · The arrival</h3>
+      <p>Pip arrived at the Midnight Nursery on a foggy Tuesday, wrapped in a blanket, holding an empty dream jar. Nobody knows where Pip came from. Pip doesn't remember either — but Pip remembers the lullaby.</p></div>
+    </div>
+    <div class="scene">
+      <div class="scene-emoji">🎓</div>
+      <div><h3>Scene 2 · The hiring</h3>
+      <p>The nursery elders tasted Pip's first dream (flavor: warm milk and moonbeams) and hired Pip on the spot as Junior Dream Engineer. First assignment: the little ghosts of Willow Lane, who hadn't slept in weeks.</p></div>
+    </div>
+    <div class="scene">
+      <div class="scene-emoji">🚀</div>
+      <div><h3>Scene 3 · Every night since</h3>
+      <p>Now Pip flies nightly with a lantern and a music box, delivering dreams across the rooftops. The goal: every creature asleep by moonset. Pip has never missed a night. (Pip naps a lot at sunrise.)</p></div>
+    </div>
+  </section>
+
+  <section id="guestbook" class="panel reveal">
+    <h2>Sign Pip's guestbook</h2>
+    <p class="section-sub">Pip reads every single one before bed. Leave a dream wish and it joins the nursery wall.</p>
+    <form id="gbForm">
+      <label class="sr-only" for="gbName">Your name</label>
+      <input id="gbName" name="name" type="text" maxlength="24" placeholder="Your name" required autocomplete="off">
+      <label class="sr-only" for="gbWish">Your dream wish</label>
+      <textarea id="gbWish" name="wish" rows="2" maxlength="140" placeholder="Your dream wish for Pip…" required></textarea>
+      <button type="submit" class="btn">✍️ Sign the wall</button>
+    </form>
+    <ul id="gbWall" aria-live="polite"></ul>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="odometer" aria-label="Visitor counter">👁 visitors <span id="hitCounter">000000</span></div>
+  <p class="credit">Pip character art: official Track 1 asset pack by haX.baby — free for hackathon use.</p>
+  <p class="tiny">Built with vanilla HTML/CSS/JS during the 48-hour sprint · Track 1: Pip · Baby's First Website</p>
+  <p class="tiny">© 2026 Pip's Midnight Nursery · no dreams were harmed</p>
+</footer>
+
+<button type="button" id="muteBtn" class="mute-fixed" aria-pressed="false" title="Mute sounds">🔊</button>
+<canvas id="confetti" aria-hidden="true"></canvas>
+<script src="main.js"></script>
+</body>
+</html>
