@@ -229,7 +229,13 @@
   function gbRenderList(list) {
     if (!wall) return;
     wall.innerHTML = "";
-    list.slice(0, 30).forEach(function (en) { wall.appendChild(gbEntryNode(en)); });
+    var seen = {};
+    list.slice(0, 30).forEach(function (en) {
+      var k = (en.n || "") + "|" + (en.w || "");
+      if (seen[k]) return; /* hide duplicate seeds from the first-visitor race */
+      seen[k] = true;
+      wall.appendChild(gbEntryNode(en));
+    });
   }
   function gbLocalLoad() {
     var entries = null;
@@ -254,9 +260,12 @@
         snap.forEach(function (child) { list.push(child.val()); });
         list.reverse(); /* newest first */
         if (!list.length) {
-          /* first visitor seeds the wall once */
-          SEEDS.forEach(function (s) {
-            dbRef.push({ n: s.n, w: s.w, t: firebase.database.ServerValue.TIMESTAMP });
+          /* first visitor seeds the wall; fixed keys make simultaneous seeds idempotent */
+          SEEDS.forEach(function (s, i) {
+            try {
+              var p = dbRef.child("seed-" + i).set({ n: s.n, w: s.w, t: firebase.database.ServerValue.TIMESTAMP });
+              if (p && p.catch) p.catch(function () {});
+            } catch (e) {}
           });
           gbRenderList(SEEDS);
         } else {

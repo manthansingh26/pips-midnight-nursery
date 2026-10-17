@@ -80,6 +80,7 @@ img{max-width:100%;height:auto;display:block}
   display:inline-block;background:#fff8d6;border:3px dashed var(--gold);border-radius:12px;
   padding:.5rem 1rem;font-weight:bold;color:var(--cocoa);margin:.4rem 0;
 }
+.egg-msg[hidden]{display:none} /* keep the easter egg hidden until 5 clicks */
 
 /* chunky retro button */
 .btn{
