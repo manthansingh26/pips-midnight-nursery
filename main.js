@@ -294,6 +294,25 @@
     });
   }
 
+  /* ---------- growth chart: bars grow on scroll, tap a bar for its story ---------- */
+  var growthWall = $("#growthWall"), growthFact = $("#growthFact");
+  if (growthWall) {
+    try {
+      var gio = new IntersectionObserver(function (es) {
+        es.forEach(function (en) {
+          if (en.isIntersecting) { growthWall.classList.add("grown"); gio.disconnect(); }
+        });
+      }, { threshold: 0.25 });
+      gio.observe(growthWall);
+    } catch (e) { growthWall.classList.add("grown"); }
+    /* click sound comes from the global button handler; here we only swap the fact text */
+    $$(".grow-row", growthWall).forEach(function (row) {
+      row.addEventListener("click", function () {
+        if (growthFact) growthFact.textContent = "📏 " + row.getAttribute("data-fact");
+      });
+    });
+  }
+
   /* ---------- day / night mode ---------- */
   function setNight(on) {
     document.body.classList.toggle("night", on);

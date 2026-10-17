@@ -116,6 +116,32 @@ img{max-width:100%;height:auto;display:block}
 .route-wrap{background:#fdf3e3;border:3px inset var(--line);border-radius:12px;padding:.5rem}
 #routeMap{width:100%;height:auto}
 
+/* growth chart (project 4) */
+.growth-wall{
+  display:flex;gap:.8rem;background:#fdf3e3;border:3px inset var(--line);
+  border-radius:12px;padding:1rem;justify-self:center;width:min(88vw,340px);
+}
+.ruler{
+  width:30px;flex:none;border-radius:6px;opacity:.55;
+  background:repeating-linear-gradient(to bottom,var(--cocoa) 0 2px,transparent 2px 16px);
+}
+.growth-rows{flex:1;display:grid;gap:.55rem;align-content:center}
+.grow-row{
+  display:grid;grid-template-columns:1fr auto;gap:.15rem .6rem;align-items:center;
+  background:none;border:none;font:inherit;color:inherit;text-align:left;cursor:pointer;
+  padding:.15rem;border-radius:8px;
+}
+.grow-label{font-weight:bold;font-size:.92rem;color:var(--berry-dark);grid-column:1;grid-row:1}
+.grow-cm{font-family:"Courier New",monospace;font-size:.85rem;grid-column:2;grid-row:1}
+.grow-track{grid-column:1 / -1;height:22px;background:#fff;border:3px inset var(--line);border-radius:999px;overflow:hidden}
+.grow-bar{
+  display:block;height:100%;width:0;border-radius:999px;
+  background:repeating-linear-gradient(45deg,var(--berry) 0 12px,var(--berry-dark) 12px 24px);
+  transition:width 1.2s cubic-bezier(.2,.8,.2,1);
+}
+.growth-wall.grown .grow-bar{width:var(--w)}
+.grow-row:active .grow-bar{filter:brightness(1.25)}
+
 /* guestbook */
 #gbForm input,#gbForm textarea{
   width:100%;font:inherit;padding:.65rem;border:3px inset var(--line);border-radius:10px;
@@ -158,8 +184,11 @@ body.night .panel{border-color:#4a3378;box-shadow:6px 6px 0 rgba(0,0,0,.35)}
 body.night .hero-pip img,body.night .proj img{mix-blend-mode:screen}
 body.night .lantern{filter:drop-shadow(0 0 26px rgba(245,197,66,.85))}
 body.night .badge,body.night .fact-list li{background:#3a2a63;color:#f3e9ff;border-color:#5a4486}
-body.night .scene{background:#2a1c4e;border-color:#4a3378}
+body.night .scene,.growth-wall{background:#2a1c4e;border-color:#4a3378}
 body.night .route-wrap{background:#1d1338;border-color:#4a3378}
+body.night .growth-wall{background:#241a45}
+body.night .grow-label{color:#f0c6da}
+body.night .grow-track{background:#1d1338;border-color:#4a3378}
 body.night #gbForm input,body.night #gbForm textarea{background:#1d1338;color:#f3e9ff;border-color:#4a3378}
 body.night #gbWall li{background:#2a1c4e;border-color:#4a3378}
 body.night .polaroid{background:#f5efe4}
@@ -193,4 +222,5 @@ body.chaos .polaroid{transform:rotate(3deg) scale(1.03)}
   .marquee-inner,.hero-pip.floaty,body.chaos .badge,body.chaos h1,body.chaos h2{animation:none}
   .js .reveal{opacity:1;transform:none;transition:none}
   .sparkle{display:none}
+  .grow-bar{transition:none}
 }
