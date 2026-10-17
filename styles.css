@@ -265,6 +265,28 @@ body.night .welcome-back{background:#1d3a2a;color:#f3e9ff;border-color:#3f7a52}
 @keyframes toastIn{from{transform:translate(-50%,10px);opacity:0}}
 body.night .toast{background:#3a2a63;color:#f3e9ff;border-color:#5a4486}
 
+/* bedtime storybook (project 6) */
+.storybook{
+  background:#fdf6e3;border:4px outset var(--line);border-radius:8px;padding:1rem;
+  justify-self:center;width:min(88vw,340px);box-shadow:inset 0 0 40px rgba(160,120,60,.15);
+}
+.book-pages{position:relative;min-height:300px}
+.book-page{display:none;text-align:center;padding:.5rem}
+.book-page.active{display:block;animation:pageIn .45s ease}
+@keyframes pageIn{from{opacity:0;transform:rotateY(-18deg) translateX(24px)}to{opacity:1;transform:none}}
+.book-page h4{color:var(--berry-dark);margin:.4rem 0}
+.book-page p{font-size:.98rem}
+.book-emoji{font-size:2.6rem;margin:.4rem 0}
+.book-cover-img{width:130px;margin:0 auto;border-radius:10px;mix-blend-mode:multiply}
+.book-controls{display:flex;align-items:center;justify-content:space-between;margin-top:.6rem}
+.book-btn{padding:.4rem .9rem;font-size:.9rem}
+.book-counter{font-family:"Courier New",monospace;font-weight:bold}
+.book-dots{display:flex;gap:.35rem;justify-content:center;margin-top:.5rem}
+.book-dots span{width:9px;height:9px;border-radius:50%;background:var(--line)}
+.book-dots span.on{background:var(--berry)}
+body.night .storybook{background:#241a45;border-color:#4a3378}
+body.night .book-page h4{color:#f0c6da}
+
 /* desktop */
 @media (min-width:720px){
   .about-grid{grid-template-columns:300px 1fr}
@@ -278,4 +300,5 @@ body.night .toast{background:#3a2a63;color:#f3e9ff;border-color:#5a4486}
   .js .reveal{opacity:1;transform:none;transition:none}
   .sparkle{display:none}
   .grow-bar{transition:none}
+  .book-page.active{animation:none}
 }

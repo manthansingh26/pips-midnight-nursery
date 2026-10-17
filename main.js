@@ -451,6 +451,48 @@
     towerWrap.addEventListener("click", tDrop);
   }
 
+  /* ---------- bedtime storybook ---------- */
+  var bookPages = $$(".book-page"), bookPrev = $("#bookPrev"), bookNext = $("#bookNext"),
+      bookCounter = $("#bookCounter"), bookDots = $("#bookDots"), bookIdx = 0;
+  function bookShow(i) {
+    if (!bookPages.length) return;
+    bookIdx = (i + bookPages.length) % bookPages.length;
+    bookPages.forEach(function (p, k) { p.classList.toggle("active", k === bookIdx); });
+    if (bookCounter) bookCounter.textContent = (bookIdx + 1) + " / " + bookPages.length;
+    if (bookDots) $$("span", bookDots).forEach(function (d, k) { d.classList.toggle("on", k === bookIdx); });
+  }
+  if (bookPages.length && bookPrev && bookNext) {
+    if (bookDots) {
+      bookPages.forEach(function (_, k) {
+        var s = document.createElement("span");
+        if (k === 0) s.className = "on";
+        bookDots.appendChild(s);
+      });
+    }
+    bookPrev.addEventListener("click", function () { bookShow(bookIdx - 1); });
+    bookNext.addEventListener("click", function () { bookShow(bookIdx + 1); });
+    var bookEl = $("#bookPages"), bx0 = null;
+    if (bookEl) {
+      bookEl.addEventListener("touchstart", function (e) { bx0 = e.touches[0].clientX; }, { passive: true });
+      bookEl.addEventListener("touchend", function (e) {
+        if (bx0 === null) return;
+        var dx = e.changedTouches[0].clientX - bx0;
+        if (Math.abs(dx) > 40) { bookShow(bookIdx + (dx < 0 ? 1 : -1)); pop(); }
+        bx0 = null;
+      }, { passive: true });
+    }
+    document.addEventListener("keydown", function (e) {
+      if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+      var sb = $("#storybook");
+      if (!sb) return;
+      var r = sb.getBoundingClientRect();
+      if (r.bottom > 0 && r.top < window.innerHeight) {
+        bookShow(bookIdx + (e.key === "ArrowRight" ? 1 : -1));
+        pop();
+      }
+    });
+  }
+
   /* ---------- surprise layer: visitor memory + hidden eggs ---------- */
   function toast(text) {
     var t = document.createElement("div");
