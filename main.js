@@ -763,6 +763,66 @@
   if (chaosBtn) chaosBtn.addEventListener("click", function () { setChaos(!document.body.classList.contains("chaos")); });
   setChaos(storeGet("pip-chaos") === "1");
 
+  /* ---------- story scenes: tappable moments ---------- */
+  var sceneFx = [
+    function (el) { /* scene 1: the fog clears */
+      if (el.dataset.busy) return; el.dataset.busy = "1";
+      var old = el.textContent; el.textContent = "🌙";
+      try { tone(880, ac().currentTime + 0.05, 0.5, "sine", 0.07); tone(1174.7, ac().currentTime + 0.3, 0.6, "sine", 0.06); } catch (e) {}
+      setTimeout(function () { el.textContent = old; delete el.dataset.busy; }, 2600);
+    },
+    function () { /* scene 2: Pip gets hired! */
+      pop(); confetti(); toast("🎓 Pip got the job! Junior Dream Engineer!");
+    },
+    function (el) { /* scene 3: nightly launch */
+      if (el.dataset.busy) return; el.dataset.busy = "1";
+      el.classList.add("launch");
+      try { var c = ac(), t = c.currentTime; tone(220, t + 0.05, 0.45, "sawtooth", 0.045); tone(440, t + 0.32, 0.45, "sawtooth", 0.045); } catch (e) {}
+      setTimeout(function () { el.classList.remove("launch"); delete el.dataset.busy; }, 1350);
+    }
+  ];
+  $$(".scene-emoji").forEach(function (el, i) {
+    if (!sceneFx[i]) return;
+    el.setAttribute("role", "button");
+    el.setAttribute("tabindex", "0");
+    el.setAttribute("aria-label", "Tap for a story surprise");
+    var fire = function () { sceneFx[i](el); };
+    el.addEventListener("click", fire);
+    el.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); fire(); }
+    });
+  });
+
+  /* ---------- tuck Pip in: the goodnight moment ---------- */
+  var tuckBtn = $("#tuckBtn"), tuckOverlay = $("#tuckOverlay"), wakeBtn = $("#wakeBtn"), tucked = false;
+  if (tuckBtn && tuckOverlay) {
+    for (var s = 0; s < 26; s++) {
+      var star = document.createElement("span");
+      star.className = "tuck-star";
+      star.textContent = "✦";
+      star.setAttribute("aria-hidden", "true");
+      star.style.left = (Math.random() * 96) + "%";
+      star.style.top = (Math.random() * 96) + "%";
+      star.style.fontSize = (8 + Math.random() * 14) + "px";
+      star.style.animationDelay = (Math.random() * 2.8) + "s";
+      tuckOverlay.appendChild(star);
+    }
+    tuckBtn.addEventListener("click", function () {
+      if (tucked) return; tucked = true;
+      tuckOverlay.hidden = false;
+      requestAnimationFrame(function () { tuckOverlay.classList.add("show"); });
+      pop();
+      if (lullabyBtn && !muted) lullabyBtn.click();
+      try { document.body.style.overflow = "hidden"; } catch (e) {}
+    });
+    if (wakeBtn) wakeBtn.addEventListener("click", function () {
+      tuckOverlay.classList.remove("show");
+      setTimeout(function () { tuckOverlay.hidden = true; tucked = false; }, 950);
+      try { document.body.style.overflow = ""; } catch (e) {}
+      pop();
+    });
+  }
+
   /* ---------- scroll reveals ---------- */
   try {
     var io = new IntersectionObserver(function (es) {

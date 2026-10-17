@@ -350,4 +350,24 @@ body.night .chat-form input{background:#1d1338;color:#f3e9ff;border-color:#4a337
   .grow-bar{transition:none}
   .book-page.active{animation:none}
   .dream.found{animation:none;opacity:.35}
+  .tuck-overlay{transition:none}
+  .tuck-moon,.tuck-star{animation:none}
+  .scene-emoji{transition:none}
 }
+
+/* ---------- story scene tappables ---------- */
+.scene-emoji{cursor:pointer;display:inline-block;transition:transform .35s ease,opacity .35s ease}
+.scene-emoji:hover{transform:scale(1.18) rotate(-6deg)}
+.scene-emoji.launch{transform:translateY(-70px) scale(.55);opacity:0}
+.scene-emoji:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+/* ---------- tuck Pip in ---------- */
+.tuck-overlay{position:fixed;inset:0;z-index:2000;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at 50% 28%,#2b1a4e 0%,#120a2e 65%,#0a0618 100%);opacity:0;transition:opacity 1.1s ease;overflow:hidden}
+.tuck-overlay[hidden]{display:none}
+.tuck-overlay.show{opacity:1}
+.tuck-inner{position:relative;z-index:2;text-align:center;color:#f3e9ff;padding:2rem;max-width:34rem}
+.tuck-moon{font-size:4rem;animation:tuckfloat 3s ease-in-out infinite}
+@keyframes tuckfloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+.tuck-text{font-size:1.5rem;margin:.6rem 0 .2rem}
+.tuck-sub{opacity:.72;margin-bottom:1.2rem}
+.tuck-star{position:absolute;color:#ffe9a8;pointer-events:none;animation:tucktw 2.8s ease-in-out infinite}
+@keyframes tucktw{0%,100%{opacity:.12;transform:scale(.75)}50%{opacity:.95;transform:scale(1.15)}}

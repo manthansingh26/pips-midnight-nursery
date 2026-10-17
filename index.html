@@ -47,7 +47,7 @@
       <span class="badge">💤 naps at sunrise</span>
     </div>
     <p id="welcomeBack" class="welcome-back" hidden></p>
-    <p><a class="btn" href="#projects">See what Pip makes ↓</a></p>
+    <p><a class="btn" href="#projects">See what Pip makes ↓</a> <button type="button" class="btn" id="tuckBtn">🌙 Tuck Pip in</button></p>
   </section>
 
   <section id="about" class="panel reveal">
@@ -285,6 +285,14 @@
 
 <button type="button" id="muteBtn" class="mute-fixed" aria-pressed="false" title="Mute sounds">🔊</button>
 <canvas id="confetti" aria-hidden="true"></canvas>
+<div id="tuckOverlay" class="tuck-overlay" hidden role="dialog" aria-label="Pip is dreaming">
+  <div class="tuck-inner">
+    <div class="tuck-moon" aria-hidden="true">😴</div>
+    <p class="tuck-text">Shhh… Pip is dreaming.</p>
+    <p class="tuck-sub">The nursery is quiet. Come back tomorrow for a new lullaby.</p>
+    <p><button type="button" class="btn" id="wakeBtn">☀️ Wake Pip up</button></p>
+  </div>
+</div>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <script src="firebase-config.js"></script>

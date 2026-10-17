@@ -82,10 +82,10 @@ One design rule governed everything: **every project must be a toy, not a card.*
 ├── main.js             # every interaction (see below)
 ├── firebase-config.js  # public Firebase config (safe to commit)
 └── assets/             # official Pip art, optimized for web
-    ├── pip_avatar_cloud.png
-    ├── pip_lullaby_box.png
-    ├── pip_dream_lantern.png
-    └── pip_portrait.png
+    ├── pip_avatar_cloud.webp
+    ├── pip_lullaby_box.webp
+    ├── pip_dream_lantern.webp
+    └── pip_portrait.webp
 ```
 `main.js` modules: sound engine · mute · lullaby synth · hero tracking + egg · confetti · sparkles · odometer · guestbook (Firebase/local) · growth chart · tower game · storybook · vault flashlight · surprise layer · Ask Pip · day/night · chaos · scroll reveals.
 
