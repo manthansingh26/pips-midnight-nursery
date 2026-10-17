@@ -243,6 +243,28 @@ body.night .tower-wrap{background:#1d1338;border-color:#4a3378}
 body.night .tower-msg{background:#3a2a63;color:#f3e9ff;border-color:#5a4486}
 body.night .tower-float{color:#f0c6da}
 
+/* surprise layer: visitor memory + hidden eggs */
+.welcome-back{
+  display:inline-block;background:#e8f7e8;border:3px dashed var(--mint);border-radius:12px;
+  padding:.4rem 1rem;font-weight:bold;color:var(--cocoa);margin:.2rem 0 .6rem;
+}
+.welcome-back[hidden]{display:none}
+body.night .welcome-back{background:#1d3a2a;color:#f3e9ff;border-color:#3f7a52}
+.clickable-moon{cursor:pointer}
+.meteor{
+  position:fixed;top:-80px;width:3px;height:70px;z-index:1500;pointer-events:none;
+  background:linear-gradient(to bottom,rgba(255,255,255,0),#ffe9a8);
+  transform:rotate(35deg);animation:meteorFall 1.4s linear forwards;
+}
+@keyframes meteorFall{to{transform:translate(-40vw,120vh) rotate(35deg);opacity:0}}
+.toast{
+  position:fixed;left:50%;bottom:5.5rem;transform:translateX(-50%);background:#fff8d6;
+  border:3px dashed var(--gold);border-radius:12px;padding:.5rem 1rem;font-weight:bold;
+  z-index:1500;animation:toastIn .3s ease;max-width:88vw;text-align:center;
+}
+@keyframes toastIn{from{transform:translate(-50%,10px);opacity:0}}
+body.night .toast{background:#3a2a63;color:#f3e9ff;border-color:#5a4486}
+
 /* desktop */
 @media (min-width:720px){
   .about-grid{grid-template-columns:300px 1fr}

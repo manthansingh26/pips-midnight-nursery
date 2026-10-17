@@ -283,6 +283,7 @@
       var name = $("#gbName").value.trim().slice(0, 24);
       var wish = $("#gbWish").value.trim().slice(0, 140);
       if (!name || !wish) return;
+      storeSet("pip-visitor-name", name); /* Pip remembers you */
       var pushed = false;
       if (firebaseOK) {
         try {
@@ -448,6 +449,88 @@
     towerBest.textContent = tBestGet();
     towerBtn.addEventListener("click", tStart);
     towerWrap.addEventListener("click", tDrop);
+  }
+
+  /* ---------- surprise layer: visitor memory + hidden eggs ---------- */
+  function toast(text) {
+    var t = document.createElement("div");
+    t.className = "toast"; t.textContent = text;
+    document.body.appendChild(t);
+    setTimeout(function () { t.remove(); }, 2400);
+  }
+
+  /* Pip remembers return visitors (Tier 3: character memory) */
+  var welcomeBack = $("#welcomeBack");
+  var vCount = parseInt(storeGet("pip-visits") || "0", 10) || 0;
+  if (welcomeBack && vCount >= 2) {
+    var vName = storeGet("pip-visitor-name");
+    welcomeBack.textContent = "🌙 Welcome back" + (vName ? ", " + vName : "") +
+      "! Visit #" + vCount + " — Pip saved you a dream.";
+    welcomeBack.hidden = false;
+  }
+
+  /* Egg 2: tap the moon 3 times -> meteor shower */
+  var routeMoon = $("#routeMoon"), moonClicks = 0, showerDone = false;
+  function meteorShower() {
+    if (!prefersReduced) {
+      for (var i = 0; i < 14; i++) {
+        (function (i) {
+          setTimeout(function () {
+            var m = document.createElement("div");
+            m.className = "meteor";
+            m.style.left = (Math.random() * 100) + "vw";
+            document.body.appendChild(m);
+            setTimeout(function () { m.remove(); }, 2800);
+          }, i * 130);
+        })(i);
+      }
+    }
+    try {
+      var c = ac(); if (c) {
+        var t0 = c.currentTime + 0.05;
+        [523.25, 659.25, 783.99, 1046.5].forEach(function (f, i) { tone(f, t0 + i * 0.12, 0.4, "sine", 0.09); });
+      }
+    } catch (e) {}
+    toast("🌠 Pip spilled the star jar! Quick, make a wish!");
+  }
+  if (routeMoon) {
+    routeMoon.addEventListener("click", function () {
+      moonClicks++;
+      pop();
+      if (moonClicks >= 3) { moonClicks = 0; if (!showerDone) showerDone = true; meteorShower(); }
+    });
+  }
+
+  /* Egg 3: click the odometer 3 times -> Pip counts you twice */
+  var odoBox = $(".odometer"), odoClicks = 0, odoBusy = false;
+  if (odoBox && hitEl) {
+    odoBox.style.cursor = "pointer";
+    odoBox.setAttribute("role", "button");
+    odoBox.setAttribute("tabindex", "0");
+    odoBox.setAttribute("aria-label", "Visitor counter. Click three times for a surprise.");
+    var odoTrigger = function () {
+      if (odoBusy) return;
+      odoClicks++;
+      if (odoClicks >= 3) {
+        odoClicks = 0; odoBusy = true;
+        var real = parseInt(storeGet("pip-visits") || "0", 10) || 0;
+        var n = 0;
+        var iv = setInterval(function () {
+          n += 3;
+          hitEl.textContent = String(real + n).padStart(6, "0");
+          if (n >= 42) {
+            clearInterval(iv);
+            hitEl.textContent = String(real).padStart(6, "0");
+            odoBusy = false;
+            toast("💛 Pip counted you twice, just to be sure.");
+          }
+        }, 35);
+      }
+    };
+    odoBox.addEventListener("click", odoTrigger);
+    odoBox.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); odoTrigger(); }
+    });
   }
 
   /* ---------- day / night mode ---------- */
