@@ -211,45 +211,88 @@
     }
   }
 
-  /* ---------- guestbook (localStorage now; FIREBASE SWAP POINT below) ---------- */
+  /* ---------- guestbook: Firebase live wall, localStorage fallback ---------- */
   var GB_KEY = "pip-guestbook";
   var wall = $("#gbWall"), gbForm = $("#gbForm");
-  var entries = null;
-  try { entries = JSON.parse(storeGet(GB_KEY) || "null"); } catch (e) { entries = null; }
-  if (!entries || !entries.length) {
-    entries = [
-      { n: "Luna the moth", w: "wish: extra-fluffy clouds over Willow Lane tonight" },
-      { n: "Grumble the gremlin", w: "wish: a lullaby with no scary verse (there is no scary verse)" }
-    ];
+  var SEEDS = [
+    { n: "Luna the moth", w: "wish: extra-fluffy clouds over Willow Lane tonight" },
+    { n: "Grumble the gremlin", w: "wish: a lullaby with no scary verse (there is no scary verse)" }
+  ];
+
+  function gbEntryNode(en) {
+    var li = document.createElement("li");
+    var b = document.createElement("strong"); b.textContent = "💭 " + en.n;
+    var p = document.createElement("p"); p.textContent = en.w;
+    li.appendChild(b); li.appendChild(p);
+    return li;
   }
-  function renderGB() {
+  function gbRenderList(list) {
     if (!wall) return;
     wall.innerHTML = "";
-    entries.slice(0, 30).forEach(function (en) {
-      var li = document.createElement("li");
-      var b = document.createElement("strong"); b.textContent = "💭 " + en.n;
-      var p = document.createElement("p"); p.textContent = en.w;
-      li.appendChild(b); li.appendChild(p);
-      wall.appendChild(li);
-    });
-    /* FIREBASE SWAP: to make the wall live across visitors, replace the
-       localStorage read/write here with Firebase Realtime Database
-       (push new wishes, on('value') re-render). Free tier, no backend code. */
+    list.slice(0, 30).forEach(function (en) { wall.appendChild(gbEntryNode(en)); });
   }
+  function gbLocalLoad() {
+    var entries = null;
+    try { entries = JSON.parse(storeGet(GB_KEY) || "null"); } catch (e) { entries = null; }
+    return (entries && entries.length) ? entries : SEEDS.slice();
+  }
+
+  /* Firebase is live only when the SDK loaded AND real config values are pasted in. */
+  var firebaseOK = false;
+  try {
+    firebaseOK = typeof firebase !== "undefined" &&
+      typeof PIP_FIREBASE_CONFIG !== "undefined" &&
+      PIP_FIREBASE_CONFIG.apiKey.indexOf("PASTE") !== 0;
+  } catch (e) { firebaseOK = false; }
+
+  if (firebaseOK) {
+    try {
+      firebase.initializeApp(PIP_FIREBASE_CONFIG);
+      var dbRef = firebase.database().ref("guestbook");
+      dbRef.limitToLast(30).on("value", function (snap) {
+        var list = [];
+        snap.forEach(function (child) { list.push(child.val()); });
+        list.reverse(); /* newest first */
+        if (!list.length) {
+          /* first visitor seeds the wall once */
+          SEEDS.forEach(function (s) {
+            dbRef.push({ n: s.n, w: s.w, t: firebase.database.ServerValue.TIMESTAMP });
+          });
+          gbRenderList(SEEDS);
+        } else {
+          gbRenderList(list);
+        }
+      }, function () { gbRenderList(gbLocalLoad()); /* read failed → local fallback */ });
+    } catch (e) { firebaseOK = false; gbRenderList(gbLocalLoad()); }
+  } else {
+    gbRenderList(gbLocalLoad());
+  }
+
   if (gbForm) {
     gbForm.addEventListener("submit", function (e) {
       e.preventDefault();
       var name = $("#gbName").value.trim().slice(0, 24);
       var wish = $("#gbWish").value.trim().slice(0, 140);
       if (!name || !wish) return;
-      entries.unshift({ n: name, w: wish });
-      storeSet(GB_KEY, JSON.stringify(entries.slice(0, 50)));
-      renderGB();
+      var pushed = false;
+      if (firebaseOK) {
+        try {
+          firebase.database().ref("guestbook").push({
+            n: name, w: wish, t: firebase.database.ServerValue.TIMESTAMP
+          });
+          pushed = true; /* the live listener re-renders automatically */
+        } catch (err) { pushed = false; }
+      }
+      if (!pushed) {
+        var entries = gbLocalLoad();
+        entries.unshift({ n: name, w: wish });
+        storeSet(GB_KEY, JSON.stringify(entries.slice(0, 50)));
+        gbRenderList(entries);
+      }
       gbForm.reset();
       pop();
     });
   }
-  renderGB();
 
   /* ---------- day / night mode ---------- */
   function setNight(on) {
