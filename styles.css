@@ -287,6 +287,35 @@ body.night .toast{background:#3a2a63;color:#f3e9ff;border-color:#5a4486}
 body.night .storybook{background:#241a45;border-color:#4a3378}
 body.night .book-page h4{color:#f0c6da}
 
+/* dream vault flashlight (tier 2 pick) */
+.dream-vault{
+  position:relative;height:380px;background:#0d0918;border:4px inset #2a1f4d;
+  border-radius:12px;overflow:hidden;touch-action:pan-y;
+}
+@media (hover:hover) and (pointer:fine){ .dream-vault{cursor:none} }
+.vault-items{position:absolute;inset:0}
+.dream{
+  position:absolute;transform:translate(-50%,-50%);background:none;border:none;font:inherit;
+  padding:.4rem;display:flex;flex-direction:column;align-items:center;gap:.1rem;cursor:pointer;
+}
+.dream .de{font-size:1.9rem;filter:drop-shadow(0 0 12px rgba(255,240,180,.9))}
+.dream .dl{font-size:.68rem;color:#cfc3ee;white-space:nowrap}
+.dream.golden .de{filter:drop-shadow(0 0 18px rgba(245,197,66,1))}
+.dream:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.dream.found{animation:dreamPop .45s ease forwards}
+@keyframes dreamPop{
+  40%{transform:translate(-50%,-50%) scale(1.5) rotate(8deg)}
+  100%{transform:translate(-50%,-50%) scale(.6);opacity:.35}
+}
+.vault-darkness{
+  position:absolute;inset:0;pointer-events:none;z-index:2;
+  background:radial-gradient(circle 130px at var(--mx,50%) var(--my,38%),transparent 0%,rgba(8,5,18,.965) 68%);
+}
+.vault-hint{
+  position:absolute;left:0;right:0;bottom:.7rem;text-align:center;color:#8f83b8;
+  font-size:.85rem;z-index:3;pointer-events:none;transition:opacity .5s;
+}
+
 /* desktop */
 @media (min-width:720px){
   .about-grid{grid-template-columns:300px 1fr}
@@ -301,4 +330,5 @@ body.night .book-page h4{color:#f0c6da}
   .sparkle{display:none}
   .grow-bar{transition:none}
   .book-page.active{animation:none}
+  .dream.found{animation:none;opacity:.35}
 }

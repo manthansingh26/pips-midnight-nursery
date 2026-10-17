@@ -575,6 +575,65 @@
     });
   }
 
+  /* ---------- dream vault flashlight ---------- */
+  var dreamVault = $("#dreamVault"), vaultDark = $("#vaultDarkness"),
+      vaultHint = $("#vaultHint"), vaultCount = $("#vaultCount");
+  var DREAMS = [
+    { e: "💭", l: "a dream of flying", x: 15, y: 20 },
+    { e: "🍰", l: "a dream of cake", x: 72, y: 16 },
+    { e: "✨", l: "the golden dream", x: 46, y: 32, golden: true },
+    { e: "🌊", l: "a dream of the sea", x: 38, y: 48 },
+    { e: "🎠", l: "a dream of carousels", x: 86, y: 56 },
+    { e: "🐉", l: "a dream of dragons", x: 18, y: 72 },
+    { e: "🌈", l: "a dream of rainbows", x: 60, y: 76 },
+    { e: "🎈", l: "a dream of balloons", x: 82, y: 84 }
+  ];
+  var foundCount = 0;
+  if (dreamVault && vaultDark) {
+    var vaultItems = $("#vaultItems");
+    DREAMS.forEach(function (d) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "dream" + (d.golden ? " golden" : "");
+      b.style.left = d.x + "%";
+      b.style.top = d.y + "%";
+      b.setAttribute("aria-label", "Dream: " + d.l + ". Activate to collect it.");
+      var em = document.createElement("span");
+      em.className = "de"; em.textContent = d.e; em.setAttribute("aria-hidden", "true");
+      var lb = document.createElement("span");
+      lb.className = "dl"; lb.textContent = d.l; lb.setAttribute("aria-hidden", "true");
+      b.appendChild(em); b.appendChild(lb);
+      b.addEventListener("click", function () {
+        if (b.classList.contains("found")) return;
+        b.classList.add("found");
+        foundCount++;
+        if (vaultCount) vaultCount.textContent = foundCount;
+        if (d.golden) {
+          confetti();
+          try {
+            var c = ac();
+            if (c) {
+              var t0 = c.currentTime + 0.05;
+              [659.25, 783.99, 987.77, 1318.5].forEach(function (f, i) { tone(f, t0 + i * 0.12, 0.5, "sine", 0.1); });
+            }
+          } catch (e) {}
+          toast("🌟 You found the golden dream! Pip is doing the happy wiggle.");
+        }
+        if (foundCount === DREAMS.length) {
+          setTimeout(function () { toast("💤 All dreams collected! The vault is empty and Pip is proud."); }, 700);
+        }
+      });
+      vaultItems.appendChild(b);
+    });
+    var vHintHidden = false;
+    dreamVault.addEventListener("pointermove", function (e) {
+      var r = dreamVault.getBoundingClientRect();
+      vaultDark.style.setProperty("--mx", (e.clientX - r.left) + "px");
+      vaultDark.style.setProperty("--my", (e.clientY - r.top) + "px");
+      if (!vHintHidden && vaultHint) { vHintHidden = true; vaultHint.style.opacity = "0"; }
+    }, { passive: true });
+  }
+
   /* ---------- day / night mode ---------- */
   function setNight(on) {
     document.body.classList.toggle("night", on);
