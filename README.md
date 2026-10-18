@@ -43,15 +43,19 @@ One design rule governed everything: **every project must be a toy, not a card.*
 - **Hero Pip** — tilts toward your cursor (gentle bob on touch), giggles when tapped
 - **Live guestbook** — Firebase Realtime Database wall shared across all visitors (Tier 3 pick)
 - **Visitor memory** — return visits greet you by name and visit count (Tier 3 pick)
+- **Footer shrine** — 88×31 badges, a Willow Lane Web Ring, and hand-typed "last updated" stamps (every early-web ritual in one corner)
 
 ### 🥚 Easter eggs
 <details>
-<summary><b>Spoilers — click to reveal (4 total)</b></summary>
+<summary><b>Spoilers — click to reveal (5 total + a sleepy tab)</b></summary>
 
 1. Click Pip's nightcap **5 times** → secret lullaby + confetti
 2. Tap the 🌙 in the dream map **3 times** → meteor shower
 3. Click the visitor odometer **3 times** → "Pip counted you twice, just to be sure"
 4. Find the **golden dream** in the vault → confetti + fanfare
+5. Enter the **Konami code** (↑↑↓↓←→←→ B A) → the secret naptime dance
+
+Shhh — switch browser tabs and even the title bar falls asleep. (Pip's afraid of silence, remember?)
 
 </details>
 
@@ -87,7 +91,7 @@ One design rule governed everything: **every project must be a toy, not a card.*
     ├── pip_dream_lantern.webp
     └── pip_portrait.webp
 ```
-`main.js` modules: sound engine · mute · lullaby synth · hero tracking + egg · confetti · sparkles · odometer · guestbook (Firebase/local) · growth chart · tower game · storybook · vault flashlight · surprise layer · Ask Pip · day/night · chaos · scroll reveals.
+`main.js` modules: sound engine · mute · lullaby synth · hero tracking + egg · confetti · sparkles · odometer · guestbook (Firebase/local) · growth chart · tower game · storybook · vault flashlight · surprise layer · Ask Pip · day/night · chaos · napping tab title · konami code · scroll reveals.
 
 ## 🏃 Run locally
 ```bash
@@ -98,7 +102,7 @@ No build, no install. (Guestbook falls back to localStorage without Firebase con
 
 ## 📜 Sprint log
 - **Day 1 (Oct 17):** baseline retro site → Firebase guestbook → growth chart → block tower → surprise layer → storybook → dream vault → Ask Pip → full QA (10/10 pass)
-- **Day 2 (Oct 18):** polish, README, submission
+- **Day 2 (Oct 18):** polish, footer shrine, Konami egg, guestbook timestamps, README, submission
 - **Day 3 (Oct 19):** final QA → submit before 17:17 IST freeze
 
 ## 🎨 Credits

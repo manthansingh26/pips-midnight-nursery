@@ -44,6 +44,7 @@ img{max-width:100%;height:auto;display:block}
 .marquee{background:var(--berry);color:var(--cream);overflow:hidden;white-space:nowrap;border-bottom:4px solid var(--cocoa)}
 .marquee-inner{display:inline-block;padding:.45rem 0;animation:mq 26s linear infinite;font-size:.95rem}
 @keyframes mq{to{transform:translateX(-50%)}}
+.marquee:hover .marquee-inner{animation-play-state:paused}
 
 /* header */
 .site-header{
@@ -55,12 +56,14 @@ img{max-width:100%;height:auto;display:block}
 .site-header nav a{
   color:var(--berry-dark);text-decoration:none;font-weight:bold;font-size:.95rem;
   border:3px outset var(--line);border-radius:10px;padding:.25rem .7rem;background:var(--cream);
+  transition:transform .12s ease,box-shadow .12s ease;
 }
 .site-header nav a:active{border-style:inset}
 .header-toggles{display:flex;gap:.4rem;flex-wrap:wrap}
 .header-toggles button{
   font:inherit;font-size:.9rem;font-weight:bold;cursor:pointer;color:#fff;background:var(--berry);
   border:3px outset #d98aa5;border-radius:10px;padding:.25rem .7rem;
+  transition:transform .12s ease;
 }
 .header-toggles button:active{border-style:inset}
 
@@ -75,7 +78,7 @@ img{max-width:100%;height:auto;display:block}
 .tagline{font-size:clamp(1.2rem,5vw,1.7rem);color:var(--berry);font-style:italic;margin:.3rem 0}
 .sub{opacity:.85;margin:.2rem 0 .8rem}
 .badges{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;margin:.6rem 0 1rem}
-.badge{border:2px dashed var(--berry);border-radius:999px;padding:.2rem .8rem;font-size:.85rem;background:#fff}
+.badge{border:2px dashed var(--berry);border-radius:999px;padding:.2rem .8rem;font-size:.85rem;background:#fff;transition:transform .15s ease}
 .egg-msg{
   display:inline-block;background:#fff8d6;border:3px dashed var(--gold);border-radius:12px;
   padding:.5rem 1rem;font-weight:bold;color:var(--cocoa);margin:.4rem 0;
@@ -87,8 +90,16 @@ img{max-width:100%;height:auto;display:block}
   display:inline-block;background:var(--berry);color:#fff !important;font:inherit;font-weight:bold;
   border:4px outset #d98aa5;border-radius:12px;padding:.65rem 1.3rem;text-decoration:none;cursor:pointer;
   box-shadow:4px 4px 0 rgba(92,64,51,.25);
+  transition:transform .12s ease,box-shadow .12s ease;
 }
 .btn:active{border-style:inset;box-shadow:none;transform:translate(2px,2px)}
+@media (hover:hover) and (pointer:fine){
+  .btn:hover:not(:active){transform:translate(-1px,-2px);box-shadow:6px 6px 0 rgba(92,64,51,.28)}
+  .site-header nav a:hover{transform:translateY(-2px);box-shadow:2px 2px 0 rgba(92,64,51,.2)}
+  .header-toggles button:hover{transform:translateY(-2px)}
+  .badges .badge:hover{transform:rotate(-2deg) scale(1.05)}
+  .dream:hover .de{transform:scale(1.12)}
+}
 .btn:focus-visible,.site-header nav a:focus-visible,.header-toggles button:focus-visible,.mute-fixed:focus-visible,.grow-row:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 
 /* panels */
@@ -153,6 +164,7 @@ img{max-width:100%;height:auto;display:block}
 #gbWall li{background:var(--cream);border:3px outset var(--line);border-radius:10px;padding:.6rem .9rem}
 #gbWall strong{color:var(--berry-dark)}
 #gbWall p{margin:.2rem 0 0}
+.gb-when{font-size:.75rem;opacity:.7;margin-left:.5rem}
 
 /* footer */
 .site-footer{text-align:center;padding:1.5rem 1rem 5rem;max-width:960px;margin:0 auto}
@@ -240,9 +252,11 @@ body.chaos .polaroid{transform:rotate(3deg) scale(1.03)}
 }
 @keyframes floatUp{to{transform:translateY(-34px);opacity:0}}
 .tower-cta{text-align:center;margin:.6rem 0 0}
+.tower-brag{color:var(--berry-dark)}
 body.night .tower-wrap{background:#1d1338;border-color:#4a3378}
 body.night .tower-msg{background:#3a2a63;color:#f3e9ff;border-color:#5a4486}
 body.night .tower-float{color:#f0c6da}
+body.night .tower-brag{color:#f0c6da}
 
 /* surprise layer: visitor memory + hidden eggs */
 .welcome-back{
@@ -275,6 +289,10 @@ body.night .toast{background:#3a2a63;color:#f3e9ff;border-color:#5a4486}
 .book-page{display:none;text-align:center;padding:.5rem}
 .book-page.active{display:block;animation:pageIn .45s ease}
 @keyframes pageIn{from{opacity:0;transform:rotateY(-18deg) translateX(24px)}to{opacity:1;transform:none}}
+.book-page.active.turn-next{animation:pageInNext .45s ease}
+@keyframes pageInNext{from{opacity:0;transform:rotateY(-18deg) translateX(24px)}to{opacity:1;transform:none}}
+.book-page.active.turn-prev{animation:pageInPrev .45s ease}
+@keyframes pageInPrev{from{opacity:0;transform:rotateY(18deg) translateX(-24px)}to{opacity:1;transform:none}}
 .book-page h4{color:var(--berry-dark);margin:.4rem 0}
 .book-page p{font-size:.98rem}
 .book-emoji{font-size:2.6rem;margin:.4rem 0}
@@ -299,7 +317,8 @@ body.night .book-page h4{color:#f0c6da}
   position:absolute;transform:translate(-50%,-50%);background:none;border:none;font:inherit;
   padding:.4rem;display:flex;flex-direction:column;align-items:center;gap:.1rem;cursor:pointer;
 }
-.dream .de{font-size:1.9rem;filter:drop-shadow(0 0 12px rgba(255,240,180,.9))}
+.dream .de{font-size:1.9rem;filter:drop-shadow(0 0 12px rgba(255,240,180,.9));transition:transform .15s ease}
+.dream:active .de{transform:scale(.82) rotate(-6deg)}
 .dream .dl{font-size:.68rem;color:#cfc3ee;white-space:nowrap}
 .dream.golden .de{filter:drop-shadow(0 0 18px rgba(245,197,66,1))}
 .dream:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
@@ -348,7 +367,8 @@ body.night .chat-form input{background:#1d1338;color:#f3e9ff;border-color:#4a337
   .js .reveal{opacity:1;transform:none;transition:none}
   .sparkle{display:none}
   .grow-bar{transition:none}
-  .book-page.active{animation:none}
+  .book-page.active,.book-page.active.turn-next,.book-page.active.turn-prev{animation:none}
+  .btn:hover:not(:active),.site-header nav a:hover,.header-toggles button:hover,.badges .badge:hover,.dream:hover .de,.dream:active .de{transform:none;transition:none}
   .dream.found{animation:none;opacity:.35}
   .tuck-overlay{transition:none}
   .tuck-moon,.tuck-star{animation:none}
@@ -371,3 +391,19 @@ body.night .chat-form input{background:#1d1338;color:#f3e9ff;border-color:#4a337
 .tuck-sub{opacity:.72;margin-bottom:1.2rem}
 .tuck-star{position:absolute;color:#ffe9a8;pointer-events:none;animation:tucktw 2.8s ease-in-out infinite}
 @keyframes tucktw{0%,100%{opacity:.12;transform:scale(.75)}50%{opacity:.95;transform:scale(1.15)}}
+
+/* ---------- footer shrine: 88x31 badges + web ring (early-web ritual) ---------- */
+.shrine{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;margin:.9rem 0 .6rem}
+.badge88{
+  display:inline-flex;align-items:center;justify-content:center;text-align:center;
+  min-height:31px;padding:.3rem .6rem;border:2px outset #d98aa5;border-radius:3px;
+  font-family:"Courier New",monospace;font-size:9px;font-weight:bold;line-height:1.3;letter-spacing:.03em;
+}
+.badge88.b1{background:#140f1e;color:#7dff9a;border-color:#3a4a3a}
+.badge88.b2{background:var(--berry);color:#fff;border-color:#d98aa5}
+.badge88.b3{background:#fff;color:var(--berry-dark);border-color:var(--line)}
+.webring{font-size:.9rem;margin:.2rem 0 .5rem;opacity:.92}
+.webring a{color:var(--berry-dark);font-weight:bold;text-decoration:underline;text-decoration-style:dotted}
+.stamp{font-size:.8rem;opacity:.75;margin:.2rem 0}
+body.night .badge88.b3{background:#3a2a63;color:#f3e9ff;border-color:#5a4486}
+body.night .webring a{color:#f0a8c6}

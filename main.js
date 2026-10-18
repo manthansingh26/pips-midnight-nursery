@@ -240,11 +240,30 @@
     { n: "Grumble the gremlin", w: "wish: a lullaby with no scary verse (there is no scary verse)" }
   ];
 
+  function gbWhen(t) {
+    var mins = Math.floor((Date.now() - Number(t)) / 60000);
+    if (!isFinite(mins)) return "";
+    if (mins < 1) return "just now";
+    if (mins < 60) return mins + " min ago";
+    if (mins < 1440) return "earlier today";
+    var days = Math.floor(mins / 1440);
+    if (days === 1) return "yesterday";
+    if (days < 30) return days + " nights ago";
+    var moons = Math.floor(days / 30);
+    return moons + (moons === 1 ? " moon ago" : " moons ago");
+  }
   function gbEntryNode(en) {
     var li = document.createElement("li");
     var b = document.createElement("strong"); b.textContent = "💭 " + en.n;
+    li.appendChild(b);
+    var when = en.t ? gbWhen(en.t) : "";
+    if (when) {
+      var w = document.createElement("span");
+      w.className = "gb-when"; w.textContent = when;
+      li.appendChild(w);
+    }
     var p = document.createElement("p"); p.textContent = en.w;
-    li.appendChild(b); li.appendChild(p);
+    li.appendChild(p);
     return li;
   }
   function gbRenderList(list) {
@@ -400,12 +419,19 @@
     if (movingEl) { movingEl.remove(); movingEl = null; }
     if (rafT) cancelAnimationFrame(rafT);
     var best = tBestGet();
+    var newBest = TG.score > best && TG.score > 0;
     if (TG.score > best) { storeSet("pip-tower-best", String(TG.score)); best = TG.score; }
     towerBest.textContent = best;
     tTone(400, 0.15, "triangle", 0.12);
     setTimeout(function () { tTone(300, 0.15, "triangle", 0.12); }, 140);
     setTimeout(function () { tTone(200, 0.28, "triangle", 0.12); }, 280);
     towerMsg.innerHTML = "";
+    if (newBest) {
+      var brag = document.createElement("div");
+      brag.className = "tower-brag";
+      brag.textContent = "🏆 New best tower — Pip is SO proud!";
+      towerMsg.appendChild(brag);
+    }
     var t1 = document.createElement("div");
     t1.textContent = "🌙 Tower tumbled at " + TG.score + " blocks!";
     var t2 = document.createElement("div");
@@ -486,8 +512,14 @@
       bookCounter = $("#bookCounter"), bookDots = $("#bookDots"), bookIdx = 0;
   function bookShow(i) {
     if (!bookPages.length) return;
+    var prevIdx = bookIdx;
     bookIdx = (i + bookPages.length) % bookPages.length;
-    bookPages.forEach(function (p, k) { p.classList.toggle("active", k === bookIdx); });
+    var dir = ((bookIdx - prevIdx + bookPages.length) % bookPages.length === 1) ? "next" : "prev";
+    bookPages.forEach(function (p, k) {
+      p.classList.toggle("active", k === bookIdx);
+      p.classList.toggle("turn-next", k === bookIdx && dir === "next");
+      p.classList.toggle("turn-prev", k === bookIdx && dir === "prev");
+    });
     if (bookCounter) bookCounter.textContent = (bookIdx + 1) + " / " + bookPages.length;
     if (bookDots) $$("span", bookDots).forEach(function (d, k) { d.classList.toggle("on", k === bookIdx); });
   }
@@ -566,10 +598,17 @@
     toast("🌠 Pip spilled the star jar! Quick, make a wish!");
   }
   if (routeMoon) {
-    routeMoon.addEventListener("click", function () {
+    var moonTap = function () {
       moonClicks++;
       pop();
       if (moonClicks >= 3 && !showerDone) { showerDone = true; meteorShower(); }
+    };
+    routeMoon.setAttribute("role", "button");
+    routeMoon.setAttribute("tabindex", "0");
+    routeMoon.setAttribute("aria-label", "Tap the moon three times for a surprise");
+    routeMoon.addEventListener("click", moonTap);
+    routeMoon.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); moonTap(); }
     });
   }
 
@@ -822,6 +861,45 @@
       pop();
     });
   }
+
+  /* ---------- napping tab title: Pip dozes when you leave ---------- */
+  var baseTitle = document.title;
+  document.addEventListener("visibilitychange", function () {
+    document.title = document.hidden ? "😴 Pip is napping…" : baseTitle;
+  });
+
+  /* ---------- konami code: the secret naptime dance ---------- */
+  var KONAMI = ["ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowLeft", "ArrowRight", "ArrowLeft", "ArrowRight", "b", "a"];
+  var konamiIdx = 0, konamiBusy = false;
+  document.addEventListener("keydown", function (e) {
+    var tag = (e.target && e.target.tagName) || "";
+    if (tag === "INPUT" || tag === "TEXTAREA") return; /* never swallow typing */
+    var key = e.key.length === 1 ? e.key.toLowerCase() : e.key;
+    if (key === KONAMI[konamiIdx]) { konamiIdx++; }
+    else { konamiIdx = key === KONAMI[0] ? 1 : 0; }
+    if (konamiIdx < KONAMI.length) return;
+    konamiIdx = 0;
+    if (konamiBusy) return; /* one burst per 2.6s, no spam */
+    konamiBusy = true;
+    setTimeout(function () { konamiBusy = false; }, 2600);
+    confetti();
+    toast("🕹 Pip unlocked the secret naptime dance! *wiggle wiggle*");
+    try {
+      var c = ac();
+      if (c) {
+        var t0 = c.currentTime + 0.05;
+        [392.0, 523.25, 659.25, 783.99, 1046.5, 783.99, 1046.5].forEach(function (f, i) {
+          tone(f, t0 + i * 0.12, 0.4, "square", 0.06);
+        });
+      }
+    } catch (err) {}
+    if (pipHero) {
+      pipHero.classList.remove("boing");
+      void pipHero.offsetWidth; /* restart the wiggle */
+      pipHero.classList.add("boing");
+      giggle();
+    }
+  });
 
   /* ---------- scroll reveals ---------- */
   try {
