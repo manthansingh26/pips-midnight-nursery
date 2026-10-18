@@ -1,0 +1,16 @@
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# Test & automation tools
+.playwright/
+.shannon/
+*.log
+
+# Static deployment safeguards
+# IMPORTANT: Vercel zero-config treats 'public/' as an output directory.
+# Keeping public/ ignored prevents accidental static root hijacking.
+public/
+dist/
+build/
+node_modules/
