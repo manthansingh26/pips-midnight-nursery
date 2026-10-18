@@ -1,0 +1,1528 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pip's Midnight Nursery — Hackathon presentation</title>
+    <style>
+        :root {
+            --cream: #fff8f1;
+            --cream-alt: #f5e8da;
+            --cream-deep: #ead7c3;
+            --berry: #a34063;
+            --berry-dark: #782744;
+            --berry-soft: #fae6ed;
+            --cocoa: #5c4033;
+            --cocoa-soft: #7d5d4e;
+            --gold: #f5c542;
+            --gold-soft: #fff2be;
+            --gold-deep: #d4a017;
+            --mint-pass: #dff5e3;
+            --mint-border: #3b8a4e;
+            --border-light: #ffffff;
+            --border-dark: #b0937d;
+            --shadow: rgba(92, 64, 51, 0.18);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            background-color: #211522;
+            color: var(--cocoa);
+            font-family: "Georgia", "Palatino Linotype", "Book Antiqua", serif;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        /* Animated Twinkling Starfield Backdrop */
+        .starfield {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            background:
+                radial-gradient(circle at 10% 15%, var(--gold) 2px, transparent 2.5px),
+                radial-gradient(circle at 88% 12%, #fff 1.5px, transparent 2px),
+                radial-gradient(circle at 22% 85%, var(--gold) 2px, transparent 3px),
+                radial-gradient(circle at 75% 88%, #fff 1.5px, transparent 2px),
+                radial-gradient(circle at 94% 50%, var(--gold) 2.5px, transparent 3px),
+                radial-gradient(circle at 5% 58%, #fff 1.5px, transparent 2px),
+                radial-gradient(circle at 50% 8%, var(--gold) 1.5px, transparent 2px);
+            animation: twinkle 4s infinite alternate ease-in-out;
+        }
+
+        @keyframes twinkle {
+            0% {
+                opacity: 0.45;
+            }
+
+            100% {
+                opacity: 0.9;
+            }
+        }
+
+        /* 16:9 Responsive Scaling Stage */
+        .stage-wrapper {
+            position: relative;
+            z-index: 1;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Fixed 1600x900 virtual canvas scaled via JS so fonts never overflow */
+        .deck {
+            width: 1600px;
+            height: 900px;
+            background-color: var(--cream);
+            border: 8px outset var(--border-dark);
+            box-shadow: 0 28px 70px rgba(0, 0, 0, 0.65), inset 0 0 0 4px var(--gold);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+            transform-origin: center center;
+            flex-shrink: 0;
+        }
+
+        /* Retro 90s Window Title Bar */
+        .window-bar {
+            background: linear-gradient(90deg, var(--berry-dark) 0%, var(--berry) 55%, #c75b80 100%);
+            color: var(--cream);
+            padding: 10px 22px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 4px ridge var(--border-dark);
+            font-family: "Trebuchet MS", "Verdana", sans-serif;
+            font-size: 21px;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .window-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            letter-spacing: 0.3px;
+        }
+
+        .window-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .win-btn {
+            height: 32px;
+            padding: 0 12px;
+            background: var(--cream);
+            color: var(--cocoa);
+            border: 3px outset #fff;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-family: "Trebuchet MS", sans-serif;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .win-btn:hover {
+            background: var(--gold-soft);
+        }
+
+        .win-btn:active {
+            border-style: inset;
+        }
+
+        /* 90s GeoCities Marquee Ribbon */
+        .marquee-bar {
+            background: var(--gold-soft);
+            border-bottom: 3px outset var(--border-dark);
+            padding: 4px 16px;
+            font-family: "Courier New", monospace;
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--cocoa);
+            overflow: hidden;
+            white-space: nowrap;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .marquee-track {
+            display: inline-block;
+            animation: scrollMarquee 26s linear infinite;
+        }
+
+        @keyframes scrollMarquee {
+            0% {
+                transform: translateX(0%);
+            }
+
+            100% {
+                transform: translateX(-50%);
+            }
+        }
+
+        /* Progress Bar */
+        .progress-track {
+            height: 6px;
+            background: var(--cream-deep);
+            width: 100%;
+            flex-shrink: 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 10%;
+            background: linear-gradient(90deg, var(--berry), var(--gold));
+            transition: width 0.25s ease;
+        }
+
+        /* Slide Viewport */
+        .slides-viewport {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            background-color: var(--cream);
+            background-image:
+                radial-gradient(var(--gold) 1.3px, transparent 1.3px),
+                radial-gradient(#e0cbb6 1.2px, transparent 1.2px);
+            background-size: 52px 52px;
+            background-position: 0 0, 26px 26px;
+        }
+
+        /* Dream Vault Flashlight Overlay (Interactive Easter Egg) */
+        .flashlight-layer {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 25;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            background: radial-gradient(circle 210px at var(--mx, 800px) var(--my, 450px),
+                    rgba(245, 197, 66, 0.15) 0%,
+                    rgba(20, 12, 28, 0.94) 100%);
+        }
+
+        .deck.flashlight-on .flashlight-layer {
+            opacity: 1;
+        }
+
+        /* Tuck Pip In Goodnight Overlay */
+        .goodnight-layer {
+            position: absolute;
+            inset: 0;
+            z-index: 30;
+            background: rgba(24, 15, 36, 0.96);
+            color: var(--cream);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            text-align: center;
+        }
+
+        .goodnight-layer.active {
+            display: flex;
+            animation: fadeIn 0.35s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .slide {
+            position: absolute;
+            inset: 0;
+            padding: 34px 56px;
+            display: none;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .slide.active {
+            display: flex;
+            animation: slidePop 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes slidePop {
+            from {
+                opacity: 0;
+                transform: translateY(10px) scale(0.992);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* Typography — Minimum 28px body enforced */
+        h1 {
+            font-size: 64px;
+            line-height: 1.08;
+            color: var(--berry);
+            text-shadow: 3px 3px 0px var(--gold-soft);
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            font-size: 46px;
+            line-height: 1.15;
+            color: var(--berry);
+            border-bottom: 4px double var(--berry);
+            padding-bottom: 10px;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+        }
+
+        h3 {
+            font-size: 32px;
+            line-height: 1.2;
+            color: var(--berry);
+            margin-bottom: 8px;
+        }
+
+        p,
+        li {
+            font-size: 29px;
+            line-height: 1.36;
+            color: var(--cocoa);
+        }
+
+        code {
+            font-family: "Courier New", monospace;
+            background: var(--gold-soft);
+            padding: 2px 8px;
+            border: 2px outset var(--gold);
+            font-size: 26px;
+            font-weight: bold;
+        }
+
+        .tagline {
+            font-size: 35px;
+            font-style: italic;
+            color: var(--cocoa);
+            background: var(--gold-soft);
+            border: 4px outset var(--gold);
+            padding: 12px 24px;
+            display: inline-block;
+            box-shadow: 4px 4px 0 var(--shadow);
+        }
+
+        /* Retro Panels & Outset Cards */
+        .outset-box {
+            background: var(--cream);
+            border: 5px outset var(--border-dark);
+            padding: 20px 26px;
+            box-shadow: 5px 5px 0 var(--shadow);
+        }
+
+        .gold-box {
+            background: var(--gold-soft);
+            border: 5px outset var(--gold);
+            padding: 20px 26px;
+            box-shadow: 5px 5px 0 var(--shadow);
+        }
+
+        .berry-box {
+            background: var(--berry-soft);
+            border: 5px outset var(--berry);
+            padding: 20px 26px;
+            box-shadow: 5px 5px 0 var(--shadow);
+        }
+
+        .berry-badge {
+            display: inline-block;
+            background: var(--berry);
+            color: var(--cream);
+            font-family: "Trebuchet MS", sans-serif;
+            font-size: 24px;
+            font-weight: bold;
+            padding: 6px 18px;
+            border: 3px outset #d97599;
+        }
+
+        .gold-pill {
+            display: inline-block;
+            background: var(--gold);
+            color: var(--cocoa);
+            font-family: "Trebuchet MS", sans-serif;
+            font-size: 23px;
+            font-weight: bold;
+            padding: 5px 16px;
+            border: 3px outset #ffe694;
+        }
+
+        /* Layout Grids */
+        .two-col {
+            display: grid;
+            grid-template-columns: 0.95fr 1.35fr;
+            gap: 34px;
+            align-items: center;
+            flex: 1;
+        }
+
+        .two-col-equal {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            align-items: stretch;
+            flex: 1;
+        }
+
+        .grid-6 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            gap: 20px;
+            flex: 1;
+        }
+
+        .grid-4 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            gap: 20px;
+            flex: 1;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            flex: 1;
+            align-items: stretch;
+        }
+
+        /* Toy Project Cards */
+        .toy-card {
+            background: var(--cream-alt);
+            border: 5px outset var(--border-dark);
+            padding: 16px 22px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 4px 4px 0 var(--shadow);
+            transition: transform 0.12s ease, background 0.15s ease;
+        }
+
+        .toy-card:hover {
+            background: var(--gold-soft);
+            transform: translateY(-3px);
+        }
+
+        .toy-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 2px dashed var(--border-dark);
+            padding-bottom: 6px;
+            margin-bottom: 8px;
+        }
+
+        .toy-tag {
+            font-family: "Courier New", monospace;
+            font-size: 18px;
+            font-weight: bold;
+            background: var(--berry);
+            color: var(--cream);
+            padding: 2px 8px;
+        }
+
+        /* Interactive Demo Buttons inside slides */
+        .mini-toy-btn {
+            margin-top: 10px;
+            align-self: flex-start;
+            background: var(--berry);
+            color: var(--cream);
+            border: 3px outset #d97599;
+            padding: 6px 14px;
+            font-family: "Trebuchet MS", sans-serif;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .mini-toy-btn:hover {
+            background: var(--berry-dark);
+        }
+
+        .mini-toy-btn:active {
+            border-style: inset;
+        }
+
+        /* 88x31 Retro Footer Badges */
+        .badge-row {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .badge-88x31 {
+            min-width: 148px;
+            height: 52px;
+            background: var(--cocoa);
+            color: var(--cream);
+            border: 4px outset var(--gold);
+            font-family: "Courier New", monospace;
+            font-size: 17px;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 12px;
+            text-align: center;
+            line-height: 1.15;
+            box-shadow: 3px 3px 0 var(--shadow);
+        }
+
+        /* Slide 9 Clickable Action Links */
+        .action-link {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            text-decoration: none;
+            background: var(--cream-alt);
+            color: var(--cocoa);
+            border: 6px outset var(--berry);
+            padding: 22px 30px;
+            font-size: 31px;
+            font-weight: bold;
+            box-shadow: 6px 6px 0 var(--shadow);
+            transition: transform 0.12s ease, background 0.15s ease;
+        }
+
+        .action-link:hover {
+            background: var(--gold-soft);
+            transform: translateY(-3px);
+        }
+
+        .action-link:active {
+            border-style: inset;
+            transform: translateY(1px);
+        }
+
+        .action-link.primary-video {
+            background: var(--berry);
+            color: var(--cream);
+            border-color: var(--gold);
+        }
+
+        .action-link.primary-video:hover {
+            background: var(--berry-dark);
+            color: var(--gold);
+        }
+
+        .link-url {
+            font-family: "Courier New", monospace;
+            font-size: 26px;
+            text-decoration: underline;
+        }
+
+        /* Cute Pip Interactive SVG */
+        .pip-card {
+            background: linear-gradient(180deg, #2b1d38 0%, #3d2647 100%);
+            border: 6px outset var(--gold);
+            padding: 22px;
+            text-align: center;
+            color: var(--cream);
+            position: relative;
+            cursor: pointer;
+            box-shadow: 6px 6px 0 var(--shadow);
+        }
+
+        .pip-illustration {
+            width: 250px;
+            height: 250px;
+            margin: 0 auto;
+            display: block;
+            transition: transform 0.2s ease;
+        }
+
+        .pip-card:hover .pip-illustration {
+            transform: scale(1.04) rotate(-2deg);
+        }
+
+        .giggle-bubble {
+            position: absolute;
+            top: 14px;
+            right: 14px;
+            background: var(--gold);
+            color: var(--cocoa);
+            border: 3px outset #fff;
+            padding: 6px 14px;
+            font-family: "Trebuchet MS", sans-serif;
+            font-size: 20px;
+            font-weight: bold;
+            opacity: 0;
+            transform: translateY(8px);
+            transition: all 0.2s ease;
+            pointer-events: none;
+        }
+
+        .giggle-bubble.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Speaker Notes Drawer (Toggle with S) */
+        .speaker-notes {
+            position: absolute;
+            left: 24px;
+            right: 24px;
+            bottom: 64px;
+            background: rgba(43, 29, 40, 0.95);
+            color: var(--gold-soft);
+            border: 4px outset var(--gold);
+            padding: 14px 22px;
+            font-family: "Trebuchet MS", sans-serif;
+            font-size: 22px;
+            line-height: 1.35;
+            z-index: 20;
+            display: none;
+        }
+
+        .speaker-notes.visible {
+            display: block;
+        }
+
+        /* Bottom Status Bar */
+        .status-bar {
+            background: var(--cream-alt);
+            border-top: 4px ridge var(--border-dark);
+            padding: 8px 22px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-family: "Trebuchet MS", sans-serif;
+            font-size: 21px;
+            color: var(--cocoa);
+            flex-shrink: 0;
+        }
+
+        .nav-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .nav-btn {
+            background: var(--cream);
+            color: var(--cocoa);
+            border: 3px outset var(--border-dark);
+            padding: 4px 16px;
+            font-family: "Trebuchet MS", sans-serif;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .nav-btn:hover {
+            background: var(--gold-soft);
+        }
+
+        .nav-btn:active {
+            border-style: inset;
+        }
+
+        .slide-counter {
+            background: #fff;
+            border: 3px inset var(--border-dark);
+            padding: 4px 18px;
+            font-family: "Courier New", monospace;
+            font-weight: bold;
+            font-size: 22px;
+            color: var(--berry);
+        }
+
+        /* Print Media Query: 1 slide per page */
+        @media print {
+            @page {
+                size: 16in 9in;
+                margin: 0;
+            }
+
+            html,
+            body {
+                background: var(--cream) !important;
+                overflow: visible !important;
+                height: auto !important;
+                width: auto !important;
+            }
+
+            .starfield,
+            .window-bar,
+            .marquee-bar,
+            .progress-track,
+            .status-bar,
+            .speaker-notes,
+            .flashlight-layer,
+            .goodnight-layer {
+                display: none !important;
+            }
+
+            .stage-wrapper {
+                display: block !important;
+                width: 100% !important;
+                height: auto !important;
+            }
+
+            .deck {
+                width: 100% !important;
+                height: auto !important;
+                border: none !important;
+                box-shadow: none !important;
+                transform: none !important;
+                overflow: visible !important;
+            }
+
+            .slides-viewport {
+                overflow: visible !important;
+            }
+
+            .slide {
+                position: relative !important;
+                display: flex !important;
+                width: 16in !important;
+                height: 9in !important;
+                page-break-after: always !important;
+                break-after: page !important;
+                border: 6px outset var(--border-dark) !important;
+                background: var(--cream) !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="starfield"></div>
+
+    <div class="stage-wrapper" id="clickStage">
+        <div class="deck" id="deckRoot">
+
+            <!-- Top Retro 90s Title Bar -->
+            <header class="window-bar">
+                <div class="window-title">
+                    <span>🌙</span>
+                    <span>pips_midnight_nursery_deck.html — GeoCities Dream-Desk Viewer</span>
+                </div>
+                <div class="window-controls">
+                    <button class="win-btn" id="soundToggleBtn" title="Toggle Web Audio Synth Chimes (M)">🔊 Synth:
+                        ON</button>
+                    <button class="win-btn" id="notesToggleBtn" title="Toggle Speaker Notes (S)">📝 Notes (S)</button>
+                    <button class="win-btn" id="fullscreenBtn" title="Toggle Fullscreen (F)">⛶ Fullscreen (F)</button>
+                </div>
+            </header>
+
+            <!-- GeoCities Marquee Status Bar -->
+            <div class="marquee-bar">
+                <div style="overflow: hidden; flex: 1;">
+                    <div class="marquee-track">
+                        ★ Welcome to Pip's Midnight Nursery · Track 1 Entry · haX.baby "Baby's First Website" 48-Hour
+                        Hackathon (Oct 17–19, 2026) · Built SOLO by Manthan · Rule: Every project must be a toy, not a
+                        card! ★ &nbsp;&nbsp;&nbsp;&nbsp;
+                        ★ Welcome to Pip's Midnight Nursery · Track 1 Entry · haX.baby "Baby's First Website" 48-Hour
+                        Hackathon (Oct 17–19, 2026) · Built SOLO by Manthan · Rule: Every project must be a toy, not a
+                        card! ★
+                    </div>
+                </div>
+                <span style="margin-left: 16px; color: var(--berry);">[114 KB · 0 Console Errors]</span>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="progress-track">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+
+            <!-- Slides Container -->
+            <main class="slides-viewport">
+
+                <!-- Interactive Flashlight Easter Egg Layer -->
+                <div class="flashlight-layer" id="flashlightLayer"></div>
+
+                <!-- Interactive "Tuck Pip In" Goodnight Overlay -->
+                <div class="goodnight-layer" id="goodnightLayer">
+                    <div style="font-size: 76px;">🌙💤</div>
+                    <h1 style="color: var(--gold); text-shadow: none;">Shhh... Pip is tucked in and dreaming.</h1>
+                    <p style="color: var(--cream); max-width: 780px;">
+                        The nursery lights are dimmed and a synthesized Web Audio lullaby is playing.
+                    </p>
+                    <button class="win-btn" id="wakePipBtn"
+                        style="font-size: 24px; padding: 18px 28px; height: auto; margin-top: 12px;">
+                        ☀️ Wake Pip up
+                    </button>
+                </div>
+
+                <!-- SLIDE 1: Title -->
+                <section class="slide active" data-slide="1"
+                    data-notes="Hi everyone! I'm Manthan, a solo builder in Track 1 of haX.baby 2026. Welcome to Pip's Midnight Nursery — a 90s GeoCities dream-desk portfolio where every project is a playable toy.">
+                    <div class="two-col">
+                        <div class="pip-card" id="pipHeroCard" title="Click to poke Pip!">
+                            <div class="giggle-bubble" id="giggleBubble">Hehe! That tickles! ✨</div>
+                            <!-- Cute Skull-Face Baby Pip SVG with Cursor-Tracking Pupils -->
+                            <svg class="pip-illustration" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                                <!-- Twinkling Background Stars -->
+                                <circle cx="30" cy="40" r="4" fill="#f5c542" />
+                                <circle cx="172" cy="35" r="5" fill="#f5c542" />
+                                <circle cx="24" cy="115" r="3" fill="#fff8f1" />
+                                <circle cx="176" cy="120" r="3.5" fill="#fff8f1" />
+                                <!-- Fluffy Cloud Pillow -->
+                                <path
+                                    d="M35 168 Q20 168 20 152 Q20 136 42 136 Q54 118 80 124 Q105 112 128 126 Q154 120 164 138 Q180 140 180 155 Q180 168 158 168 Z"
+                                    fill="#fff8f1" stroke="#b0937d" stroke-width="3.5" />
+                                <!-- Berry Nightcap -->
+                                <path d="M50 82 Q96 16 158 68 Q136 54 100 62 Q68 68 50 82 Z" fill="#a34063"
+                                    stroke="#5c4033" stroke-width="3.5" />
+                                <circle cx="162" cy="68" r="13" fill="#fff8f1" stroke="#5c4033" stroke-width="3.5" />
+                                <!-- Cute Skull Head -->
+                                <circle cx="100" cy="98" r="45" fill="#fff8f1" stroke="#5c4033" stroke-width="4" />
+                                <!-- Cute Pastel Bow -->
+                                <polygon points="55,66 40,56 44,75" fill="#f582ae" stroke="#5c4033"
+                                    stroke-width="2.5" />
+                                <polygon points="55,66 70,56 66,75" fill="#f582ae" stroke="#5c4033"
+                                    stroke-width="2.5" />
+                                <circle cx="55" cy="66" r="5.5" fill="#f5c542" stroke="#5c4033" stroke-width="2" />
+                                <!-- Dark Eye Sockets -->
+                                <circle cx="82" cy="96" r="13" fill="#5c4033" />
+                                <circle cx="118" cy="96" r="13" fill="#5c4033" />
+                                <!-- Glowing Gold Pupils (Move with cursor) -->
+                                <circle class="pip-pupil" cx="84" cy="94" r="5.5" fill="#f5c542" />
+                                <circle class="pip-pupil" cx="120" cy="94" r="5.5" fill="#f5c542" />
+                                <circle class="pip-pupil" cx="86" cy="92" r="2" fill="#ffffff" />
+                                <circle class="pip-pupil" cx="122" cy="92" r="2" fill="#ffffff" />
+                                <!-- Tiny Skull Nose & Happy Crooked Smile -->
+                                <path d="M97 108 L100 102 L103 108 Z" fill="#5c4033" />
+                                <path d="M84 118 Q100 128 116 116" fill="none" stroke="#5c4033" stroke-width="3.5"
+                                    stroke-linecap="round" />
+                                <!-- Rosy Cheeks -->
+                                <ellipse cx="64" cy="108" rx="7" ry="4" fill="#f582ae" opacity="0.65" />
+                                <ellipse cx="136" cy="108" rx="7" ry="4" fill="#f582ae" opacity="0.65" />
+                            </svg>
+                            <div style="margin-top: 10px;">
+                                <span class="gold-pill">✨ Junior Dream Engineer (Poke me!)</span>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; flex-direction: column; gap: 18px;">
+                            <div>
+                                <span class="berry-badge">haX.baby "Baby's First Website" · Oct 17–19, 2026</span>
+                            </div>
+                            <h1>Pip's Midnight Nursery</h1>
+                            <div>
+                                <div class="tagline">
+                                    "I build the dreams you fall asleep inside."
+                                </div>
+                            </div>
+                            <div class="outset-box">
+                                <p><strong>Manthan · Solo · Track 1 · haX.baby 2026</strong></p>
+                                <p style="margin-top: 8px; color: var(--cocoa-soft);">
+                                    A 90s GeoCities-style dream-desk portfolio where every single project is a playable
+                                    toy, not a static card.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SLIDE 2: The dare -->
+                <section class="slide" data-slide="2"
+                    data-notes="In Track 1, every single participant is given the exact same character prompt: Pip. When 1,000 websites feature the same baby, the differentiator isn't the premise — it's pure execution.">
+                    <h2>
+                        <span>The dare: same baby, 1,000 websites</span>
+                        <span class="gold-pill">Track 1 challenge</span>
+                    </h2>
+                    <div class="two-col-equal">
+                        <div class="outset-box"
+                            style="display: flex; flex-direction: column; justify-content: center; gap: 18px;">
+                            <span class="berry-badge" style=" align-self: flex-start;">The Track 1 premise</span>
+                            <h3>One shared character prompt</h3>
+                            <p>Every builder in Track 1 starts with the exact same character specification:
+                                <strong>Pip</strong>.
+                            </p>
+                            <p>When a thousand submissions share the same baby, a static template of text and cards
+                                blends right into the crowd.</p>
+                        </div>
+                        <div class="gold-box"
+                            style="display: flex; flex-direction: column; justify-content: center; gap: 18px;">
+                            <span class="berry-badge" style="align-self: flex-start;">Our answer</span>
+                            <h3>The contest is execution</h3>
+                            <p><strong>Pip's Midnight Nursery</strong> transforms the browser into a tactile,
+                                interactive 90s dream workshop.</p>
+                            <p>Every invention synthesizes live audio, animates in real time, or reacts when you poke
+                                it.</p>
+                        </div>
+                    </div>
+                    <div class="berry-box" style="text-align: center; margin-top: 18px; padding: 14px 24px;">
+                        <p><strong>The mission:</strong> Don't just tell visitors Pip is a Junior Dream Engineer — let
+                            them play with Pip's tools.</p>
+                    </div>
+                </section>
+
+                <!-- SLIDE 3: Meet Pip -->
+                <section class="slide" data-slide="3"
+                    data-notes="Let's meet Pip! Pip is a cute skull-faced baby with glowing amber eye sockets and a berry nightcap. Pip is sleepy, giggly, and clumsy, working as Junior Dream Engineer at the Midnight Nursery.">
+                    <h2>
+                        <span>Meet Pip</span>
+                        <span class="gold-pill">Official nursery badge</span>
+                    </h2>
+                    <div class="two-col">
+                        <div class="outset-box" style="text-align: center; background: var(--cream-alt);">
+                            <svg class="pip-illustration" style="width: 200px; height: 200px;" viewBox="0 0 200 200"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="100" cy="100" r="88" fill="#fff2be" stroke="#f5c542" stroke-width="5" />
+                                <path d="M52 82 Q95 20 155 68 Q135 55 100 62 Q68 68 52 82 Z" fill="#a34063"
+                                    stroke="#5c4033" stroke-width="3.5" />
+                                <circle cx="158" cy="68" r="12" fill="#fff8f1" stroke="#5c4033" stroke-width="3.5" />
+                                <circle cx="100" cy="102" r="44" fill="#fff8f1" stroke="#5c4033" stroke-width="4" />
+                                <circle cx="82" cy="100" r="12" fill="#5c4033" />
+                                <circle cx="118" cy="100" r="12" fill="#5c4033" />
+                                <circle class="pip-pupil" cx="84" cy="98" r="5" fill="#f5c542" />
+                                <circle class="pip-pupil" cx="120" cy="98" r="5" fill="#f5c542" />
+                                <path d="M97 110 L100 104 L103 110 Z" fill="#5c4033" />
+                                <path d="M86 122 Q100 130 114 120" fill="none" stroke="#5c4033" stroke-width="3.5"
+                                    stroke-linecap="round" />
+                            </svg>
+                            <h3 style="margin-top: 10px;">Pip · Age: 1,000 moons</h3>
+                            <p style="font-style: italic; font-size: 28px; margin-top: 4px;">
+                                "I build the dreams you fall asleep inside."
+                            </p>
+                        </div>
+
+                        <div style="display: flex; flex-direction: column; gap: 16px;">
+                            <div class="outset-box">
+                                <h3>💀 Character: cute skull-faced baby</h3>
+                                <p>Warm cream skull face, glowing golden eyes, and a starry nightcap — adorable, cozy,
+                                    and never scary.</p>
+                            </div>
+                            <div class="outset-box">
+                                <h3>🛠️ Job: Junior Dream Engineer at the Midnight Nursery</h3>
+                                <p>Designs custom dreams, soothing lullabies, and glowing nightlights for little night
+                                    creatures.</p>
+                            </div>
+                            <div class="gold-box">
+                                <h3>🌙 Personality: sleepy, giggly, clumsy</h3>
+                                <p>Follows your mouse around the nursery, giggles whenever poked, and dozes off when
+                                    tucked in.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SLIDE 4: Design philosophy -->
+                <section class="slide" data-slide="4"
+                    data-notes="Our core rule was simple: every project must be a toy, not a card. We paired that rule with an authentic 90s GeoCities dream-desk aesthetic using warm cream, berry, cocoa, and gold.">
+                    <h2>
+                        <span>Design philosophy</span>
+                        <span class="gold-pill">Core architecture rule</span>
+                    </h2>
+                    <div class="gold-box" style="text-align: center; padding: 22px 28px;">
+                        <h1 style="font-size: 52px; margin-bottom: 6px;">"Every project must be a toy, not a card."</h1>
+                        <p>A portfolio shouldn't just list skills — every single panel is an interactive gadget you can
+                            play with immediately.</p>
+                    </div>
+                    <div class="grid-3" style="margin-top: 20px;">
+                        <div class="outset-box">
+                            <h3>🎨 90s dream-desk palette</h3>
+                            <p>Cream <code>#fff8f1</code> background, berry <code>#a34063</code> accents, cocoa
+                                <code>#5c4033</code> text, and gold <code>#f5c542</code> highlights.
+                            </p>
+                        </div>
+                        <div class="outset-box">
+                            <h3>🖥️ Tactile GeoCities charm</h3>
+                            <p>Chunky outset 3D bevel borders, ambient starfield touches, live visitor counter, and
+                                88×31 retro web badges.</p>
+                        </div>
+                        <div class="outset-box">
+                            <h3>🧸 Zero dead placeholders</h3>
+                            <p>No "coming soon" links or lorem ipsum. Every control makes music, animates SVG routes, or
+                                saves scores.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SLIDE 5: The 6 projects -->
+                <section class="slide" data-slide="5"
+                    data-notes="Here are the 6 playable projects inside Pip's workshop: Lullaby Lab, Nightlight Collection, Dream Delivery Routes, Growth Chart, Block Tower, and the 5-page Bedtime Storybook.">
+                    <h2>
+                        <span>The 6 playable projects</span>
+                        <span class="gold-pill">All interactive in-browser</span>
+                    </h2>
+                    <div class="grid-6">
+                        <div class="toy-card">
+                            <div>
+                                <div class="toy-card-header">
+                                    <h3>1. Lullaby Lab</h3>
+                                    <span class="toy-tag">SYNTH</span>
+                                </div>
+                                <p>Real Web Audio synth that plays a different procedural melody nightly.</p>
+                            </div>
+                        </div>
+
+                        <div class="toy-card">
+                            <div>
+                                <div class="toy-card-header">
+                                    <h3>2. Nightlight Collection</h3>
+                                    <span class="toy-tag">THEME</span>
+                                </div>
+                                <p>Interactive glowing nightlights with nursery day and night mode switching.</p>
+                            </div>
+                        </div>
+
+                        <div class="toy-card">
+                            <div>
+                                <div class="toy-card-header">
+                                    <h3>3. Dream Delivery Routes</h3>
+                                    <span class="toy-tag">SVG MAP</span>
+                                </div>
+                                <p>Animated SVG map tracking Pip's nightly dream deliveries across rooftops.</p>
+                            </div>
+                        </div>
+
+                        <div class="toy-card">
+                            <div>
+                                <div class="toy-card-header">
+                                    <h3>4. Growth Chart</h3>
+                                    <span class="toy-tag">SKILLS</span>
+                                </div>
+                                <p>Tap-for-facts skill chart measuring milestones in centimeters of giggles.</p>
+                            </div>
+                        </div>
+
+                        <div class="toy-card">
+                            <div>
+                                <div class="toy-card-header">
+                                    <h3>5. Block Tower</h3>
+                                    <span class="toy-tag">ARCADE</span>
+                                </div>
+                                <p>Playable stacking game with keyboard controls and high-score tracking.</p>
+                            </div>
+                        </div>
+
+                        <div class="toy-card">
+                            <div>
+                                <div class="toy-card-header">
+                                    <h3>6. Bedtime Storybook</h3>
+                                    <span class="toy-tag">5 PAGES</span>
+                                </div>
+                                <p>Illustrated 5-page flipbook with smooth page turns and keyboard navigation.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SLIDE 6: Signature moments -->
+                <section class="slide" data-slide="6"
+                    data-notes="Beyond the 6 toys, the site is packed with signature moments and easter eggs. You can even test the Flashlight and Tuck Pip In sequence right here on this slide!">
+                    <h2>
+                        <span>Signature moments & easter eggs</span>
+                        <span class="gold-pill">Try it live hints</span>
+                    </h2>
+                    <div class="grid-4">
+                        <div class="outset-box"
+                            style="display: flex; flex-direction: column; justify-content: space-between;">
+                            <div>
+                                <h3>🔦 Dream Vault flashlight cursor</h3>
+                                <p><em>Try it live:</em> sweep your flashlight cursor across the dark vault to uncover
+                                    the hidden golden dream easter egg.</p>
+                            </div>
+                            <button class="mini-toy-btn" id="demoFlashlightBtn">🔦 Toggle flashlight preview</button>
+                        </div>
+
+                        <div class="outset-box"
+                            style="display: flex; flex-direction: column; justify-content: space-between;">
+                            <div>
+                                <h3>🛌 "Tuck Pip in" goodnight sequence</h3>
+                                <p><em>Try it live:</em> dims the entire nursery into a starry sleep screen with a
+                                    gentle lullaby until you wake Pip up.</p>
+                            </div>
+                            <button class="mini-toy-btn" id="demoTuckBtn">🛌 Tuck Pip in right now</button>
+                        </div>
+
+                        <div class="outset-box">
+                            <h3>💬 Ask Pip chat & live guestbook</h3>
+                            <p><em>Try it live:</em> rule-based chat that remembers your name, plus a real-time Firebase
+                                guestbook wall for visitors.</p>
+                        </div>
+
+                        <div class="gold-box">
+                            <h3>🎮 Konami code & 88×31 badges</h3>
+                            <p><em>Try it live:</em> enter <code>↑↑↓↓←→←→BA</code> for a secret surprise, and inspect
+                                the 88×31 retro footer badges.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SLIDE 7: Under the hood -->
+                <section class="slide" data-slide="7"
+                    data-notes="Under the hood: built with pure vanilla HTML, CSS, and JS. Zero external audio files — all audio is generated via the Web Audio API. Total page size is just 114 KB with zero console errors.">
+                    <h2>
+                        <span>Under the hood</span>
+                        <span class="gold-pill">Lean & dependency-free</span>
+                    </h2>
+                    <div class="two-col">
+                        <div style="display: flex; flex-direction: column; gap: 16px;">
+                            <div class="outset-box">
+                                <h3>⚡ Vanilla HTML, CSS & JavaScript</h3>
+                                <p>Zero heavy UI frameworks or external dependencies. Clean, hand-written code built
+                                    from scratch in 48 hours.</p>
+                            </div>
+                            <div class="outset-box">
+                                <h3>🎹 Web Audio API (zero audio files)</h3>
+                                <p>Every lullaby melody, chime, and sound effect is synthesized mathematically in real
+                                    time inside the browser.</p>
+                            </div>
+                            <div class="outset-box">
+                                <h3>🔥 Firebase Realtime Database</h3>
+                                <p>Powers the live nursery guestbook and real-time visitor counter with strict
+                                    server-side validation rules.</p>
+                            </div>
+                        </div>
+
+                        <div class="gold-box"
+                            style="display: flex; flex-direction: column; gap: 16px; justify-content: center; text-align: center;">
+                            <span class="berry-badge" style="align-self: center;">Performance metrics</span>
+                            <div style="font-size: 74px; font-weight: bold; color: var(--berry); line-height: 1;">114 KB
+                            </div>
+                            <p><strong>Total page weight</strong> (instant load)</p>
+                            <hr style="border: 2px ridge var(--border-dark); margin: 4px 0;" />
+                            <p>✅ <strong>Zero console errors</strong></p>
+                            <p>📱 <strong>Mobile-tested</strong> across touch screens</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SLIDE 8: Verification -->
+                <section class="slide" data-slide="8"
+                    data-notes="We didn't just build features — we battle-tested them. The site passed 2 penetration audits, survived live Firebase attack tests, and achieved 10/10 and 7/7 QA passes.">
+                    <h2>
+                        <span>Verification & proof of quality</span>
+                        <span class="gold-pill">Production-hardened</span>
+                    </h2>
+                    <div class="grid-3">
+                        <div class="outset-box"
+                            style="display: flex; flex-direction: column; justify-content: space-between;">
+                            <div>
+                                <span class="berry-badge" style="margin-bottom: 14px;">Security audit</span>
+                                <h3>2 penetration audits passed</h3>
+                                <p style="margin-top: 12px;">Audited end-to-end for XSS, script injection, and DOM
+                                    tampering across Ask Pip chat and guestbook inputs.</p>
+                            </div>
+                            <div class="gold-pill"
+                                style="text-align: center; background: var(--mint-pass); border-color: var(--mint-border);">
+                                ✅ 2 / 2 AUDITS PASSED
+                            </div>
+                        </div>
+
+                        <div class="outset-box"
+                            style="display: flex; flex-direction: column; justify-content: space-between;">
+                            <div>
+                                <span class="berry-badge" style="margin-bottom: 14px;">Database defense</span>
+                                <h3>Firebase survived live attack tests</h3>
+                                <p style="margin-top: 12px;">Tested against unauthorized writes, oversized payload
+                                    floods, and schema spoofing — all blocked cleanly.</p>
+                            </div>
+                            <div class="gold-pill"
+                                style="text-align: center; background: var(--mint-pass); border-color: var(--mint-border);">
+                                🛡️ LIVE ATTACKS DENIED
+                            </div>
+                        </div>
+
+                        <div class="gold-box"
+                            style="display: flex; flex-direction: column; justify-content: space-between;">
+                            <div>
+                                <span class="berry-badge" style="margin-bottom: 14px;">Full QA matrix</span>
+                                <h3>10/10 + 7/7 QA passes</h3>
+                                <p style="margin-top: 12px;">Every toy, keyboard control, audio synth node, mobile
+                                    breakpoint, and easter egg verified without errors.</p>
+                            </div>
+                            <div class="gold-pill"
+                                style="text-align: center; background: var(--mint-pass); border-color: var(--mint-border);">
+                                🏆 10/10 & 7/7 QA PASS
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SLIDE 9: Watch it -->
+                <section class="slide" data-slide="9"
+                    data-notes="Everything is live right now. Click the top button to watch the full demo video on YouTube, or jump straight into the live Vercel deployment and GitHub repository.">
+                    <h2>
+                        <span>Watch it & play it live</span>
+                        <span class="gold-pill">All links open in a new tab</span>
+                    </h2>
+                    <div style="display: flex; flex-direction: column; gap: 22px; flex: 1; justify-content: center;">
+                        <a class="action-link primary-video" href="https://youtu.be/_F9mAiD65NQ" target="_blank"
+                            rel="noopener noreferrer">
+                            <span>🎬 Watch the demo video on YouTube</span>
+                            <span class="link-url">https://youtu.be/_F9mAiD65NQ ↗</span>
+                        </a>
+
+                        <a class="action-link" href="https://pips-midnight-nursery.vercel.app/" target="_blank"
+                            rel="noopener noreferrer">
+                            <span>🌙 Explore the live site (Vercel)</span>
+                            <span class="link-url">https://pips-midnight-nursery.vercel.app/ ↗</span>
+                        </a>
+
+                        <a class="action-link" href="https://github.com/manthansingh26/pips-midnight-nursery"
+                            target="_blank" rel="noopener noreferrer">
+                            <span>💻 View the source code repository (GitHub)</span>
+                            <span class="link-url">https://github.com/manthansingh26/pips-midnight-nursery ↗</span>
+                        </a>
+                    </div>
+                </section>
+
+                <!-- SLIDE 10: Thank you -->
+                <section class="slide" data-slide="10"
+                    data-notes="Thank you so much to the haX.baby judges and organizers! Pip giggles at everything — I hope you do too.">
+                    <div
+                        style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 22px;">
+                        <span class="berry-badge">Thank you · haX.baby 2026</span>
+                        <h1 style="font-size: 56px; max-width: 980px;">
+                            "Pip giggles at everything — I hope you do too. 🌙"
+                        </h1>
+                        <div class="outset-box" style="max-width: 860px; background: var(--cream-alt);">
+                            <p><strong>Pip's Midnight Nursery</strong> · Built solo by <strong>Manthan</strong></p>
+                            <p style="font-size: 28px; color: var(--cocoa-soft); margin-top: 6px;">
+                                Track 1 · haX.baby "Baby's First Website" 48-hour hackathon (Oct 17–19, 2026)
+                            </p>
+                        </div>
+
+                        <!-- 88x31 Retro Footer Badges -->
+                        <div class="badge-row" style="margin-top: 8px;">
+                            <div class="badge-88x31">PIP'S NURSERY<br />EST. 2026 🌙</div>
+                            <div class="badge-88x31">100% TOYS<br />ZERO CARDS 🧸</div>
+                            <div class="badge-88x31">VANILLA JS<br />114 KB ⚡</div>
+                            <div class="badge-88x31">WEB AUDIO<br />SYNTH 🎵</div>
+                            <div class="badge-88x31">QA 10/10<br />PASSED ✅</div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Speaker Notes HUD -->
+                <div class="speaker-notes" id="speakerNotesBox"></div>
+
+            </main>
+
+            <!-- Bottom Status & Navigation Bar -->
+            <footer class="status-bar">
+                <div>
+                    <span>Navigate: <strong>← / → / Space</strong> or click slide · <strong>F</strong> fullscreen ·
+                        <strong>S</strong> speaker notes</span>
+                </div>
+                <div class="nav-controls">
+                    <button class="nav-btn" id="prevBtn" aria-label="Previous slide">◀ Prev</button>
+                    <div class="slide-counter" id="slideCounter">1 / 10</div>
+                    <button class="nav-btn" id="nextBtn" aria-label="Next slide">Next ▶</button>
+                </div>
+            </footer>
+
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            const deckRoot = document.getElementById('deckRoot');
+            const slides = Array.from(document.querySelectorAll('.slide'));
+            const totalSlides = slides.length;
+            const counterEl = document.getElementById('slideCounter');
+            const progressFill = document.getElementById('progressFill');
+            const speakerNotesBox = document.getElementById('speakerNotesBox');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const fullscreenBtn = document.getElementById('fullscreenBtn');
+            const soundToggleBtn = document.getElementById('soundToggleBtn');
+            const notesToggleBtn = document.getElementById('notesToggleBtn');
+            const clickStage = document.getElementById('clickStage');
+            const pipHeroCard = document.getElementById('pipHeroCard');
+            const giggleBubble = document.getElementById('giggleBubble');
+            const demoFlashlightBtn = document.getElementById('demoFlashlightBtn');
+            const demoTuckBtn = document.getElementById('demoTuckBtn');
+            const goodnightLayer = document.getElementById('goodnightLayer');
+            const wakePipBtn = document.getElementById('wakePipBtn');
+
+            let currentIndex = 0;
+            let soundEnabled = true;
+            let audioCtx = null;
+
+            // Responsive 16:9 Scaling so layout never breaks on any projector or screen
+            function fitDeckToScreen() {
+                const vw = window.innerWidth;
+                const vh = window.innerHeight;
+                const scale = Math.min((vw * 0.96) / 1600, (vh * 0.95) / 900);
+                deckRoot.style.transform = 'scale(' + scale + ')';
+            }
+            window.addEventListener('resize', fitDeckToScreen);
+            fitDeckToScreen();
+
+            // Web Audio API Synthesizer (Zero external audio files!)
+            function playNote(freq, duration, delay) {
+                if (!soundEnabled) return;
+                try {
+                    if (!audioCtx) {
+                        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+                        audioCtx = new AudioContextClass();
+                    }
+                    if (audioCtx.state === 'suspended') {
+                        audioCtx.resume();
+                    }
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    const startTime = audioCtx.currentTime + (delay || 0);
+
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, startTime);
+
+                    gain.gain.setValueAtTime(0.001, startTime);
+                    gain.gain.exponentialRampToValueAtTime(0.08, startTime + 0.02);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
+
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+
+                    osc.start(startTime);
+                    osc.stop(startTime + duration);
+                } catch (err) {
+                    // Ignore audio restrictions before first user gesture
+                }
+            }
+
+            function playSlideChime(index) {
+                const pentatonic = [523.25, 587.33, 659.25, 783.99, 880.0, 1046.5];
+                const freq = pentatonic[index % pentatonic.length];
+                playNote(freq, 0.28, 0);
+            }
+
+            function playLullabyChord() {
+                playNote(523.25, 0.5, 0);
+                playNote(659.25, 0.5, 0.12);
+                playNote(783.99, 0.6, 0.24);
+                playNote(1046.5, 0.8, 0.36);
+            }
+
+            function showSlide(index, silent) {
+                if (index < 0) index = 0;
+                if (index >= totalSlides) index = totalSlides - 1;
+                currentIndex = index;
+
+                slides.forEach((slide, idx) => {
+                    slide.classList.toggle('active', idx === currentIndex);
+                });
+
+                counterEl.textContent = (currentIndex + 1) + ' / ' + totalSlides;
+                progressFill.style.width = (((currentIndex + 1) / totalSlides) * 100) + '%';
+
+                // Turn off flashlight if leaving slide 6
+                if (currentIndex !== 5) {
+                    deckRoot.classList.remove('flashlight-on');
+                }
+
+                // Update speaker notes
+                const notes = slides[currentIndex].getAttribute('data-notes') || '';
+                speakerNotesBox.textContent = '🎤 Speaker Note: ' + notes;
+
+                if (!silent) {
+                    playSlideChime(currentIndex);
+                }
+            }
+
+            function nextSlide() {
+                if (currentIndex < totalSlides - 1) {
+                    showSlide(currentIndex + 1);
+                }
+            }
+
+            function prevSlide() {
+                if (currentIndex > 0) {
+                    showSlide(currentIndex - 1);
+                }
+            }
+
+            function toggleFullscreen() {
+                if (!document.fullscreenElement) {
+                    document.documentElement.requestFullscreen().catch(() => { });
+                } else {
+                    document.exitFullscreen().catch(() => { });
+                }
+            }
+
+            // Controls
+            nextBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                nextSlide();
+            });
+
+            prevBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                prevSlide();
+            });
+
+            fullscreenBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                toggleFullscreen();
+            });
+
+            soundToggleBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                soundEnabled = !soundEnabled;
+                soundToggleBtn.textContent = soundEnabled ? '🔊 Synth: ON' : '🔇 Synth: OFF';
+                if (soundEnabled) playLullabyChord();
+            });
+
+            notesToggleBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                speakerNotesBox.classList.toggle('visible');
+            });
+
+            // Interactive Pip Giggle on Slide 1
+            const giggles = [
+                'Hehe! That tickles! ✨',
+                'I built a dream for you! 🌙',
+                '*Yawns sleepily* 💤',
+                'Poke me 5 times for luck! 💀'
+            ];
+            let giggleCount = 0;
+
+            if (pipHeroCard) {
+                pipHeroCard.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    giggleBubble.textContent = giggles[giggleCount % giggles.length];
+                    giggleCount++;
+                    giggleBubble.classList.add('show');
+                    playLullabyChord();
+                    setTimeout(() => giggleBubble.classList.remove('show'), 1800);
+                });
+            }
+
+            // Interactive Flashlight & Tuck-in on Slide 6
+            if (demoFlashlightBtn) {
+                demoFlashlightBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    deckRoot.classList.toggle('flashlight-on');
+                    playNote(880, 0.25, 0);
+                });
+            }
+
+            if (demoTuckBtn) {
+                demoTuckBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    goodnightLayer.classList.add('active');
+                    playLullabyChord();
+                });
+            }
+
+            if (wakePipBtn) {
+                wakePipBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    goodnightLayer.classList.remove('active');
+                    playLullabyChord();
+                });
+            }
+
+            // Cursor tracking for Pip's eyes and Dream Vault flashlight
+            window.addEventListener('mousemove', (e) => {
+                const rect = deckRoot.getBoundingClientRect();
+                const scaleX = 1600 / rect.width;
+                const scaleY = 900 / rect.height;
+                const x = (e.clientX - rect.left) * scaleX;
+                const y = (e.clientY - rect.top) * scaleY;
+
+                deckRoot.style.setProperty('--mx', x + 'px');
+                deckRoot.style.setProperty('--my', y + 'px');
+
+                const dx = ((e.clientX / window.innerWidth) - 0.5) * 6;
+                const dy = ((e.clientY / window.innerHeight) - 0.5) * 6;
+                document.querySelectorAll('.pip-pupil').forEach((pupil) => {
+                    pupil.style.transform = 'translate(' + dx.toFixed(1) + 'px, ' + dy.toFixed(1) + 'px)';
+                });
+            });
+
+            // Click anywhere on slide body to advance
+            clickStage.addEventListener('click', (e) => {
+                if (e.target.closest('a, button, #pipHeroCard')) return;
+                nextSlide();
+            });
+
+            // Keyboard Navigation + Konami Code Easter Egg
+            const konamiPattern = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+            let konamiProgress = 0;
+
+            window.addEventListener('keydown', (e) => {
+                // Check Konami sequence
+                if (e.key === konamiPattern[konamiProgress] || e.key.toLowerCase() === konamiPattern[konamiProgress]) {
+                    konamiProgress++;
+                    if (konamiProgress === konamiPattern.length) {
+                        playLullabyChord();
+                        goodnightLayer.classList.add('active');
+                        konamiProgress = 0;
+                        return;
+                    }
+                } else {
+                    konamiProgress = 0;
+                }
+
+                if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+                    e.preventDefault();
+                    nextSlide();
+                } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+                    e.preventDefault();
+                    prevSlide();
+                } else if (e.key === 'Home') {
+                    e.preventDefault();
+                    showSlide(0);
+                } else if (e.key === 'End') {
+                    e.preventDefault();
+                    showSlide(totalSlides - 1);
+                } else if (e.key === 'f' || e.key === 'F') {
+                    e.preventDefault();
+                    toggleFullscreen();
+                } else if (e.key === 's' || e.key === 'S') {
+                    e.preventDefault();
+                    speakerNotesBox.classList.toggle('visible');
+                } else if (e.key === 'm' || e.key === 'M') {
+                    e.preventDefault();
+                    soundToggleBtn.click();
+                }
+            });
+
+            // Initialize from URL hash if present
+            const hashSlide = parseInt(window.location.hash.replace('#', ''), 10);
+            if (!isNaN(hashSlide) && hashSlide >= 1 && hashSlide <= totalSlides) {
+                showSlide(hashSlide - 1, true);
+            } else {
+                showSlide(0, true);
+            }
+        })();
+    </script>
+</body>
+
+</html>
